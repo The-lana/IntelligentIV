@@ -22,6 +22,6 @@ void setup(){
 
 void loop(){
   printandupdate();
-  
+  Serial1.println("aloooi");
   
 }
