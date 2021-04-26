@@ -1,27 +1,101 @@
-#include <Arduino.h>
-#include "menu.h"
-#include "encoder.h"
 
-
-int currentSelection = 0;
-int incomingByte = 0;
-
+#include "Arduino.h"
+#include "wifinetwork.h"
+#include "drop.h"
 
 void setup(){
-  Serial.begin(9200);
-  checkIIC();
-  initialize();
-  pinMode(encoder0PinB,INPUT);
-  pinMode(encoder0PinA,INPUT);
-  pinMode(27,INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(encoder0PinA),doencoder,CHANGE);
-  attachInterrupt(digitalPinToInterrupt(27),encoderbtn,FALLING);
-  drawMenu();
+
+Serial.begin(9600);
+// connect to wifi
+pinMode(CLK,INPUT);
+pinMode(DT,INPUT);
+
+xTaskCreatePinnedToCore(
+  keepwifialive,
+  "keep_wifi_alive",
+  1025*5,
+  NULL,
+  2,
+  NULL,
+  CONFIG_ARDUINO_RUNNING_CORE
+);
+
+xTaskCreatePinnedToCore(
+  displaySerial,
+  "print to serial from queue",
+  1024*3,
+  NULL,
+  1,
+  NULL,
+  CONFIG_ARDUINO_RUNNING_CORE
+);
+
+xTaskCreatePinnedToCore(
+  doCalculation,
+  "calculating values",
+  1024*5,
+  NULL,
+  3,
+  &handle_doCalculation,
+  CONFIG_ARDUINO_RUNNING_CORE
+);
+
+
+xTaskCreatePinnedToCore(
+  displayMenu,
+  "menu display",
+  1024*3,
+  NULL,
+  1,
+  &handle_displayMenu,
+  CONFIG_ARDUINO_RUNNING_CORE
+);
+
+vTaskSuspend(handle_displayMenu);
+
+if (handle_doCalculation!=NULL && handle_displayMenu!=NULL)
+{
+  xTaskCreatePinnedToCore(
+  btnTask,
+  "handle btn",
+  1024*4,
+  NULL,
+  2,
+  NULL,
+  CONFIG_ARDUINO_RUNNING_CORE
+);
+
+}
+else{
+  Serial.println("handle is null");
 }
 
+xTaskCreatePinnedToCore(
+  keepMQTTConnected,
+  "keep mqtt connection active",
+  1024*2,
+  NULL,
+  2,
+  NULL,
+  CONFIG_ARDUINO_RUNNING_CORE
+);
+
+xTaskCreatePinnedToCore(
+  mqttTask,
+  "send items to mqtt",
+  1024*5,
+  NULL,
+  1,
+  NULL,
+  CONFIG_ARDUINO_RUNNING_CORE
+);
+
+
+attachInterrupt(digitalPinToInterrupt(IRPIN),dropInterrupt,HIGH);
+
+}
 
 void loop(){
-  printandupdate();
-  
-  
+
+vTaskDelete(NULL);
 }
