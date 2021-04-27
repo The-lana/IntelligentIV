@@ -48,11 +48,12 @@ void mqttTask(void * parameters){
   for(;;){
     char buffer[50];
     if(client.connected()){
+      client.loop();
       while(xQueueReceive(mqttqueue,(void*) &buffer,0) == pdTRUE){
         client.publish(IVTOPIC,buffer);
       }
     }else{
-      Serial.println("client not connected");
+      //Serial.println("client not connected");
     }
 
     vTaskDelay(1000/portTICK_PERIOD_MS);
