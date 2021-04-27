@@ -143,9 +143,9 @@ void displaySerial(void * parameters){
 /**
  * @brief 
  * 
- * funtion to read encoder state and returns 1 if CW , -1 for CCW and 0 for no change.
+ * funtion to read encoder and increment a counter.
  * 
- * @return int 
+ *  
  */
 
 void doencoder(){
