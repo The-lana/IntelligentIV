@@ -85,22 +85,24 @@ for(;;){
     //renable interrupts
     interrupts();
     char buffer[100];
+    char displaybuffer[50];
     //check if there is any change in number of drops.
     if(protectedDropCount != oldDropcount){
         volumeinfused = protectedDropCount/dropfactor;
         driprate = 360000/(dropfactor*protectedDropTime);
         snprintf(buffer,50,"volume infused : %d  drip rate : %d \n",volumeinfused,driprate);
         if(xQueueSend(serialqueue,&buffer,0) == pdFALSE){
-            Serial.println("queue full");
+            Serial.println("Serial queue full");
         }
         if(xQueueSend(mqttqueue,&buffer,0) == pdFALSE){
-            Serial.println("queue full");
+            Serial.println("mqtt queue full");
         }
-        sniprintf(buffer,50,"%d ml/hr",driprate);
-                if(xQueueSend(displayqueue,&buffer,0) == pdFALSE){
-            Serial.println("queue full");
+        snprintf(displaybuffer,50,"%d ml/hr",driprate);
+        if(xQueueSend(displayqueue,&buffer,0) == pdFALSE){
+            Serial.println("display queue full");
         }
         oldDropcount = protectedDropCount;
+        
     }
 
     vTaskDelay(200/portTICK_PERIOD_MS);
@@ -156,10 +158,10 @@ void displaySerial(void * parameters){
 
 void displayOLED(void * parameters){
     for(;;){
-        char buffer[100];
+        char buffer[50];
         if(xQueueReceive(displayqueue,(void*)&buffer,0)==pdTRUE){
             display.clearDisplay();
-            display.setCursor(SCREEN_HEIGHT/2,SCREEN_WIDTH/2);
+            display.setCursor(SCREEN_HEIGHT/2-5,SCREEN_WIDTH/2-5);
             display.println(buffer);
 
 
@@ -231,13 +233,11 @@ void displayMenu(void * parameters){
  */
 bool initilizeDisplay(){
     
-    if(!display.begin(SSD1306_SWITCHCAPVCC,0x3C))
-        return false;
-    
+    if(!display.begin(SSD1306_SWITCHCAPVCC,0x3C)){return false;}
     display.clearDisplay();
     display.setTextColor(WHITE);
     display.setTextSize(2);
-
+    display.println("display working");
     return true;
 
 }

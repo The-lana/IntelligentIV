@@ -9,6 +9,7 @@ Serial.begin(9600);
 // connect to wifi
 pinMode(CLK,INPUT);
 pinMode(DT,INPUT);
+pinMode(SW,INPUT_PULLUP);
 
 
 
