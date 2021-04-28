@@ -15,20 +15,26 @@ uint8_t btnCount = 0;// count number of times button is pressed.
 int8_t menucount = 0;
 int8_t oldmenuCount = 1;
 QueueHandle_t serialqueue = xQueueCreate(5,sizeof(char)*50) ;
+QueueHandle_t displayqueue = xQueueCreate(5,sizeof(char)*50) ;
 TaskHandle_t handle_doCalculation = NULL;
 TaskHandle_t handle_displayMenu = NULL;
 uint8_t aState=0;
 uint8_t aLastState=0;
 int encoderCounter=0;
 int oldencodervalue = 0;
+
+Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire,OLED_RESET);
+
+/**
+ * @brief timer to automatically close .
+ * 
+ */
 static TimerHandle_t handle_timer = xTimerCreate(
   "menu hold timer",
   30000/portTICK_PERIOD_MS,
   pdFALSE,
   (void*)0,
   timercallback);
-
-
 
 
 
@@ -55,7 +61,7 @@ void timercallback(TimerHandle_t xtimer){
 void IRAM_ATTR dropInterrupt(void){
     int newtime = millis();
     if(newtime-interuptOldDropTime > 200){
-        interuptDropTime = (newtime - interuptOldDropTime)/100;
+        interuptDropTime = (newtime - interuptOldDropTime)/10;
         interuptDropCount++;
         interuptOldDropTime = newtime;
     }
@@ -82,12 +88,16 @@ for(;;){
     //check if there is any change in number of drops.
     if(protectedDropCount != oldDropcount){
         volumeinfused = protectedDropCount/dropfactor;
-        driprate = 3600/(dropfactor*protectedDropTime);
+        driprate = 360000/(dropfactor*protectedDropTime);
         snprintf(buffer,50,"volume infused : %d  drip rate : %d \n",volumeinfused,driprate);
         if(xQueueSend(serialqueue,&buffer,0) == pdFALSE){
             Serial.println("queue full");
         }
         if(xQueueSend(mqttqueue,&buffer,0) == pdFALSE){
+            Serial.println("queue full");
+        }
+        sniprintf(buffer,50,"%d ml/hr",driprate);
+                if(xQueueSend(displayqueue,&buffer,0) == pdFALSE){
             Serial.println("queue full");
         }
         oldDropcount = protectedDropCount;
@@ -126,7 +136,11 @@ void btnTask(void * parameters){
 
 }
 
-
+/**
+ * @brief task to print queue elements to serial terminal.
+ * 
+ * @param parameters 
+ */
 void displaySerial(void * parameters){
     for(;;){
         char buffer[100];
@@ -139,6 +153,21 @@ void displaySerial(void * parameters){
 
 }
 
+
+void displayOLED(void * parameters){
+    for(;;){
+        char buffer[100];
+        if(xQueueReceive(displayqueue,(void*)&buffer,0)==pdTRUE){
+            display.clearDisplay();
+            display.setCursor(SCREEN_HEIGHT/2,SCREEN_WIDTH/2);
+            display.println(buffer);
+
+
+        }
+
+    vTaskDelay(50/portTICK_PERIOD_MS);
+    }
+}
 
 /**
  * @brief 
@@ -191,5 +220,24 @@ void displayMenu(void * parameters){
         vTaskDelay(10/portTICK_PERIOD_MS);
     }
 
+
+}
+
+/**
+ * @brief initialize the display.
+ * 
+ * @return true if successful.
+ * @return false if unable to initialize display.
+ */
+bool initilizeDisplay(){
+    
+    if(!display.begin(SSD1306_SWITCHCAPVCC,0x3C))
+        return false;
+    
+    display.clearDisplay();
+    display.setTextColor(WHITE);
+    display.setTextSize(2);
+
+    return true;
 
 }

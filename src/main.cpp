@@ -10,6 +10,9 @@ Serial.begin(9600);
 pinMode(CLK,INPUT);
 pinMode(DT,INPUT);
 
+
+
+
 xTaskCreatePinnedToCore(
   keepwifialive,
   "keep_wifi_alive",
@@ -30,6 +33,21 @@ xTaskCreatePinnedToCore(
   CONFIG_ARDUINO_RUNNING_CORE
 );
 
+
+if(initilizeDisplay()){
+
+  xTaskCreatePinnedToCore(
+    displayOLED,
+    "display in oled",
+    1024*5,
+    NULL,
+    1,
+    NULL,
+    CONFIG_ARDUINO_RUNNING_CORE
+  );
+}else{
+  Serial.println("Oled not available");
+}
 xTaskCreatePinnedToCore(
   doCalculation,
   "calculating values",
