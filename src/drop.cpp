@@ -115,7 +115,7 @@ for(;;){
 void btnTask(void * parameters){
     for(;;){
 
-        if(!digitalRead(SW)){
+        if(digitalRead(SW)){
             Serial.println("in btn task");
             btnCount++;
             //Serial.println("count incremented");
