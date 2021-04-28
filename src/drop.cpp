@@ -95,10 +95,10 @@ for(;;){
             Serial.println("Serial queue full");
         }
         if(xQueueSend(mqttqueue,&buffer,0) == pdFALSE){
-            Serial.println("mqtt queue full");
+            //Serial.println("mqtt queue full");
         }
         snprintf(displaybuffer,50,"%d ml/hr",driprate);
-        if(xQueueSend(displayqueue,&buffer,0) == pdFALSE){
+        if(xQueueSend(displayqueue,&displaybuffer,0) == pdFALSE){
             Serial.println("display queue full");
         }
         oldDropcount = protectedDropCount;
@@ -115,7 +115,7 @@ for(;;){
 void btnTask(void * parameters){
     for(;;){
 
-        if(digitalRead(SW)){
+        if(!digitalRead(SW)){
             Serial.println("in btn task");
             btnCount++;
             //Serial.println("count incremented");
@@ -160,10 +160,12 @@ void displayOLED(void * parameters){
     for(;;){
         char buffer[50];
         if(xQueueReceive(displayqueue,(void*)&buffer,0)==pdTRUE){
+            Serial.print("sending to display: ");
+            Serial.print(buffer);
             display.clearDisplay();
-            display.setCursor(SCREEN_HEIGHT/2-5,SCREEN_WIDTH/2-5);
+            display.setCursor(0,0);
             display.println(buffer);
-
+            display.display();
 
         }
 
@@ -233,11 +235,19 @@ void displayMenu(void * parameters){
  */
 bool initilizeDisplay(){
     
-    if(!display.begin(SSD1306_SWITCHCAPVCC,0x3C)){return false;}
+    if(!display.begin(SSD1306_SWITCHCAPVCC,0x3C)){
+        Serial.println("false");
+        return false;
+         }
+    
     display.clearDisplay();
     display.setTextColor(WHITE);
     display.setTextSize(2);
+    display.setCursor(0,0);
     display.println("display working");
+    Serial.println("display setup done");
+    display.display();
+    //delay(500);
     return true;
 
 }

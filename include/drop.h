@@ -15,7 +15,7 @@
 #define SW 27
 
 #define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
+#define SCREEN_HEIGHT 32
 
 #define OLED_RESET -1
 
