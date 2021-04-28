@@ -117,6 +117,13 @@ attachInterrupt(digitalPinToInterrupt(IRPIN),dropInterrupt,HIGH);
 }
 
 void loop(){
+<<<<<<< HEAD
 
 vTaskDelete(NULL);
+=======
+  //test commment 
+  printandupdate();
+  
+  
+>>>>>>> upstream/main
 }
