@@ -199,19 +199,27 @@ void doencoder(){
    
  }
 
+//ente pokirtharam
+
+
 void displayMenu(void * parameters){
     for(;;){
-        if(btnCount){
-        doencoder();
+        char buffer[12];
+        if(btnCount==1){
+        doencoder(); // menu change
         if(encoderCounter- oldencodervalue > 1){
             menucount++;
             if(menucount > 2) {menucount = 0;}
             oldencodervalue = encoderCounter;
+
+           
         }
         if(encoderCounter - oldencodervalue < -1){
             menucount--;
             if(menucount < 0){menucount = 2;}
             oldencodervalue = encoderCounter;
+
+            //
         }
         
         if(menucount!= oldmenuCount){
@@ -222,7 +230,67 @@ void displayMenu(void * parameters){
         }
 
         }
-        vTaskDelay(10/portTICK_PERIOD_MS);
+      
+         if(btnCount==2)
+             switch(menucount)
+            {
+                case 1 : //driprate
+                {
+                    encoderCounter=driprateset;
+                    doencoder();
+                    if(encoderCounter<0)
+                        encoderCounter=0;
+                    snprintf(buffer,11,"%d ml/hr",encoderCounter)
+                    if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
+            Serial.println("queue full");
+                    }
+                    
+                    //old drip can be send to setencounter if necessery
+                }break;
+                case 2 : //dripfactor
+                { 
+                   encoderCounter=dropfactor;
+                    doencoder();
+                    if(encoderCounter<0)
+                        encoderCounter=0;
+                    snprintf(buffer,11,"%d ml/drop",encoderCounter)
+                    if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
+            Serial.println("queue full");
+                    }
+                }break;
+                case 3 :  //mlinfusion
+                {
+                    encoderCounter=volumetobeinfused;
+                    doencoder();
+                    if(encoderCounter<0)
+                        encoderCounter=0;
+                    snprintf(buffer,11,"%d ml",encoderCounter)
+                    if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
+            Serial.println("queue full");
+                    }
+                }break;
+            }
+         if(btnCount==3)
+             switch(menucount)
+            {
+                case 1 : //driprate
+                {
+                
+                    dripratset = encoderCounter;
+                    //old drip can be send to setencounter if necessery
+                }break;
+                case 2 : //dripfactor
+                { 
+                    
+                    dropfactor = encoderCounter;
+                }break;
+                case 3 :  //mlinfusion
+                {
+                    
+                    volumetobeinfused =encoderCounter;
+                }break;
+            } 
+            vTaskDelay(10/portTICK_PERIOD_MS);
     }
 
 
