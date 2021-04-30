@@ -231,66 +231,81 @@ void displayMenu(void * parameters){
         }
 
         }
+
       
          if(btnCount==2)
              switch(menucount)
             {
-                case 1 : //driprate
+                case 0 : //driprate
                 {
-                    encoderCounter=driprateset;
+                    //encoderCounter=driprateset;
+                    
                     doencoder();
                     if(encoderCounter<0)
                         encoderCounter=0;
-                    snprintf(buffer,11,"%d ml/hr",encoderCounter);
+                    if(oldencodervalue != encoderCounter){
+                    snprintf(buffer,15,"%d ml/hr",encoderCounter);
                     if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
-            Serial.println("queue full");
+                    Serial.println("queue full");
                     }
+                    oldencodervalue = encoderCounter;
+                    }
+                    
                     
                     //old drip can be send to setencounter if necessery
                 }break;
-                case 2 : //dripfactor
+                case 1 : //dripfactor
                 { 
-                   encoderCounter=dropfactor;
+                   //encoderCounter=oldencodervalue;
                     doencoder();
                     if(encoderCounter<0)
                         encoderCounter=0;
-                    snprintf(buffer,11,"%d ml/drop",encoderCounter);
+                    if(oldencodervalue != encoderCounter){
+                    snprintf(buffer,15,"%d ml/drop",encoderCounter);
+                    if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
+            Serial.println("queue full");
+                 }
+                    oldencodervalue = encoderCounter;
+                    }
+                }break;
+                case 2 :  //mlinfusion
+                {
+                   // encoderCounter=volumetobeinfused;
+                    doencoder();
+                    if(encoderCounter<0)
+                        encoderCounter=0;
+                    if(oldencodervalue != encoderCounter){
+                    snprintf(buffer,15,"%d ml",encoderCounter);
                     if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
             Serial.println("queue full");
                     }
-                }break;
-                case 3 :  //mlinfusion
-                {
-                    encoderCounter=volumetobeinfused;
-                    doencoder();
-                    if(encoderCounter<0)
-                        encoderCounter=0;
-                    snprintf(buffer,11,"%d ml",encoderCounter);
-                    if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
-            Serial.println("queue full");
+                     oldencodervalue = encoderCounter;
                     }
                 }break;
             }
-         if(btnCount==3)
+         if(btnCount==3){
              switch(menucount)
             {
-                case 1 : //driprate
+                case 0 : //driprate
                 {
                 
                     driprateset = encoderCounter;
+                    Serial.println("driprateset");
                     //old drip can be send to setencounter if necessery
                 }break;
-                case 2 : //dripfactor
+                case 1 : //dripfactor
                 { 
-                    
+                    Serial.println("dripfactor set");
                     dropfactor = encoderCounter;
                 }break;
-                case 3 :  //mlinfusion
+                case 2 :  //mlinfusion
                 {
-                    
+                    Serial.println("volume to be infused is set");
                     volumetobeinfused =encoderCounter;
                 }break;
             } 
+            btnCount = 0;
+         }
             vTaskDelay(10/portTICK_PERIOD_MS);
     }
 
