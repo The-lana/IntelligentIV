@@ -22,6 +22,7 @@ uint8_t aState=0;
 uint8_t aLastState=0;
 int encoderCounter=0;
 int oldencodervalue = 0;
+int driprateset=0;
 
 Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire,OLED_RESET);
 
@@ -273,7 +274,7 @@ void displayMenu(void * parameters){
                 case 1 : //driprate
                 {
                 
-                    dripratset = encoderCounter;
+                    driprateset = encoderCounter;
                     //old drip can be send to setencounter if necessery
                 }break;
                 case 2 : //dripfactor
