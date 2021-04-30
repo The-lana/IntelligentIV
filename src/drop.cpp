@@ -118,6 +118,7 @@ void btnTask(void * parameters){
         if(!digitalRead(SW)){
             Serial.println("in btn task");
             btnCount++;
+            Serial.println(btnCount);
             //Serial.println("count incremented");
             xTimerStart(handle_timer,portMAX_DELAY);
             //Serial.println("timer started");
