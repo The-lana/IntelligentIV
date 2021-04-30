@@ -240,7 +240,7 @@ void displayMenu(void * parameters){
                     doencoder();
                     if(encoderCounter<0)
                         encoderCounter=0;
-                    snprintf(buffer,11,"%d ml/hr",encoderCounter)
+                    snprintf(buffer,11,"%d ml/hr",encoderCounter);
                     if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
             Serial.println("queue full");
                     }
@@ -253,7 +253,7 @@ void displayMenu(void * parameters){
                     doencoder();
                     if(encoderCounter<0)
                         encoderCounter=0;
-                    snprintf(buffer,11,"%d ml/drop",encoderCounter)
+                    snprintf(buffer,11,"%d ml/drop",encoderCounter);
                     if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
             Serial.println("queue full");
                     }
@@ -264,7 +264,7 @@ void displayMenu(void * parameters){
                     doencoder();
                     if(encoderCounter<0)
                         encoderCounter=0;
-                    snprintf(buffer,11,"%d ml",encoderCounter)
+                    snprintf(buffer,11,"%d ml",encoderCounter);
                     if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
             Serial.println("queue full");
                     }
