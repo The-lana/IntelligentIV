@@ -22,7 +22,8 @@ uint8_t aState=0;
 uint8_t aLastState=0;
 int encoderCounter=0;
 int oldencodervalue = 0;
-int driprateset=0;
+int driprateset=0,dripfactorset=0,mlinfused=0;
+int temp=0;
 
 Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire,OLED_RESET);
 
@@ -201,7 +202,22 @@ void doencoder(){
  }
 
 //ente pokirtharam
-
+//entem
+int setvalue(int temp)
+{
+    if(encoderCounter>temp){
+         temp++;
+         if(temp>999)
+           temp=0;
+     }
+     //if(encoderCounter<temp)
+     else{
+         temp--;
+        if(temp<0)
+            temp=0;
+     }
+     return temp;
+}
 
 void displayMenu(void * parameters){
     for(;;){
@@ -243,25 +259,28 @@ void displayMenu(void * parameters){
                     doencoder();
                     if(encoderCounter<0)
                         encoderCounter=0;
-                    if(oldencodervalue != encoderCounter){
-                    snprintf(buffer,15,"%d ml/hr",encoderCounter);
+                    if(encoderCounter!=oldencodervalue){
+                        driprateset=setvalue(driprateset);
+                        
+                    snprintf(buffer,15,"%d ml/hr",driprateset);
                     if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
                     Serial.println("queue full");
-                    }
+                 }
                     oldencodervalue = encoderCounter;
-                    }
+             }
                     
                     
                     //old drip can be send to setencounter if necessery
                 }break;
                 case 1 : //dripfactor
                 { 
-                   //encoderCounter=oldencodervalue;
+                   //oldencodervalue=oldencodervalue;
                     doencoder();
                     if(encoderCounter<0)
                         encoderCounter=0;
                     if(oldencodervalue != encoderCounter){
-                    snprintf(buffer,15,"%d ml/drop",encoderCounter);
+                        dripfactorset=setvalue(dripfactorset);
+                    snprintf(buffer,15,"%d ml/drop",dripfactorset);
                     if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
             Serial.println("queue full");
                  }
@@ -270,12 +289,13 @@ void displayMenu(void * parameters){
                 }break;
                 case 2 :  //mlinfusion
                 {
-                   // encoderCounter=volumetobeinfused;
+                   // oldencodervalue=volumetobeinfused;
                     doencoder();
                     if(encoderCounter<0)
                         encoderCounter=0;
                     if(oldencodervalue != encoderCounter){
-                    snprintf(buffer,15,"%d ml",encoderCounter);
+                        mlinfused=setvalue(mlinfused);
+                    snprintf(buffer,15,"%d ml",mlinfused);
                     if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
             Serial.println("queue full");
                     }
