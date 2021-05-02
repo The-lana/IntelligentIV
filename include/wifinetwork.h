@@ -14,6 +14,8 @@
 
 
 
+extern bool flowstatus;
+
 
 void keepwifialive(void * parameters);
 void mqttTask(void * parameters);

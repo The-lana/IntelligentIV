@@ -66,6 +66,8 @@ void callback( char* topic, byte* payload, unsigned int length){
 
   Serial.print("message arrived on : ");
   Serial.println(topic);
+  flowstatus = !flowstatus;
+
 
 }
 
