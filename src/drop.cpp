@@ -172,7 +172,7 @@ void displayOLED(void * parameters){
 
         }
 
-    vTaskDelay(50/portTICK_PERIOD_MS);
+    vTaskDelay(20/portTICK_PERIOD_MS);
     }
 }
 
@@ -210,7 +210,6 @@ int setvalue(int temp)
          if(temp>999)
            temp=0;
      }
-     //if(encoderCounter<temp)
      else{
          temp--;
         if(temp<0)
@@ -295,7 +294,7 @@ void displayMenu(void * parameters){
                         encoderCounter=0;
                     if(oldencodervalue != encoderCounter){
                         mlinfused=setvalue(mlinfused);
-                    snprintf(buffer,15,"%d ml",mlinfused);
+                    snprintf(buffer,15,"%d ml",mlinfused*100);
                     if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
             Serial.println("queue full");
                     }
@@ -310,7 +309,7 @@ void displayMenu(void * parameters){
                 {
                 
                     driprateset = encoderCounter;
-                    Serial.println("driprateset");
+                    Serial.println("drop rate set");
                     //old drip can be send to setencounter if necessery
                 }break;
                 case 1 : //dripfactor
@@ -326,7 +325,7 @@ void displayMenu(void * parameters){
             } 
             btnCount = 0;
          }
-            vTaskDelay(10/portTICK_PERIOD_MS);
+            vTaskDelay(35/portTICK_PERIOD_MS);
     }
 
 
