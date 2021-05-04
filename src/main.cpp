@@ -12,6 +12,9 @@ pinMode(DT,INPUT);
 pinMode(SW,INPUT_PULLUP);
 
 
+servoinit();
+
+
 
 /**
 xTaskCreatePinnedToCore(

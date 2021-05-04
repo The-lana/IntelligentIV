@@ -24,8 +24,12 @@ int encoderCounter=0;
 int oldencodervalue = 0;
 int driprateset=0,dripfactorset=0,mlinfused=0;
 int temp=0;
+bool flowStatus = true;
+
 
 Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire,OLED_RESET);
+Servo servo1;
+
 
 /**
  * @brief timer to automatically close .
@@ -106,7 +110,7 @@ for(;;){
         oldDropcount = protectedDropCount;
         
     }
-
+    flowstop();
     vTaskDelay(200/portTICK_PERIOD_MS);
  }
 
@@ -355,3 +359,20 @@ bool initilizeDisplay(){
     return true;
 
 }
+
+
+void servoinit(){
+
+    servo1.attach(SERVOPIN);
+
+}
+
+void flowstop(){
+    if(flowStatus) {
+        servo1.write(0);
+    }
+    else {
+        servo1.write(60);
+    }
+}
+
