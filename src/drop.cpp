@@ -24,7 +24,7 @@ int encoderCounter=0;
 int oldencodervalue = 0;
 int driprateset=0,dripfactorset=0,mlinfused=0;
 int temp=0;
-bool flowStatus = true;
+bool flowStatus = false;
 
 
 Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire,OLED_RESET);
@@ -372,7 +372,7 @@ void flowstop(){
         servo1.write(0);
     }
     else {
-        servo1.write(60);
+        servo1.write(90);
     }
 }
 
