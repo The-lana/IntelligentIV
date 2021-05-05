@@ -243,8 +243,11 @@ void displayMenu(void * parameters){
         }
         
         if(menucount!= oldmenuCount){
-        if(xQueueSend(serialqueue,&menu[menucount],0)==pdFALSE){
+       /* if(xQueueSend(serialqueue,&menu[menucount],0)==pdFALSE){
             Serial.println("queue full");
+        }*/
+        if(xQueueSend(displayqueue,&menu[menucount],0) == pdFALSE){
+            Serial.println("display queue full");
         }
         oldmenuCount = menucount;
         }
@@ -266,7 +269,7 @@ void displayMenu(void * parameters){
                         driprateset=setvalue(driprateset);
                         
                     snprintf(buffer,15,"%d ml/hr",driprateset);
-                    if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
+                    if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
                     Serial.println("queue full");
                  }
                     oldencodervalue = encoderCounter;
@@ -284,8 +287,8 @@ void displayMenu(void * parameters){
                     if(oldencodervalue != encoderCounter){
                         dripfactorset=setvalue(dripfactorset);
                     snprintf(buffer,15,"%d ml/drop",dripfactorset);
-                    if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
-            Serial.println("queue full");
+                    if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
+                         Serial.println("queue full");
                  }
                     oldencodervalue = encoderCounter;
                     }
@@ -299,8 +302,8 @@ void displayMenu(void * parameters){
                     if(oldencodervalue != encoderCounter){
                         mlinfused=setvalue(mlinfused);
                     snprintf(buffer,15,"%d ml",mlinfused*100);
-                    if(xQueueSend(serialqueue,&buffer,0)==pdFALSE){
-            Serial.println("queue full");
+                    if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
+                         Serial.println("queue full");
                     }
                      oldencodervalue = encoderCounter;
                     }
@@ -313,17 +316,17 @@ void displayMenu(void * parameters){
                 {
                 
                     driprateset = encoderCounter;
-                    Serial.println("drop rate set");
+                    display.println("drop rate set");
                     //old drip can be send to setencounter if necessery
                 }break;
                 case 1 : //dripfactor
                 { 
-                    Serial.println("dripfactor set");
+                    display.println("dripfactor set");
                     dropfactor = encoderCounter;
                 }break;
                 case 2 :  //mlinfusion
                 {
-                    Serial.println("volume to be infused is set");
+                    display.println("volume to be infused is set");
                     volumetobeinfused =encoderCounter;
                 }break;
             } 
@@ -350,7 +353,7 @@ bool initilizeDisplay(){
     
     display.clearDisplay();
     display.setTextColor(WHITE);
-    display.setTextSize(2);
+    display.setTextSize(1);
     display.setCursor(0,0);
     display.println("display working");
     Serial.println("display setup done");
