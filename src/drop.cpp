@@ -24,7 +24,7 @@ int encoderCounter=0;
 int oldencodervalue = 0;
 int driprateset=0,dripfactorset=0,mlinfused=0;
 int temp=0;
-bool flowStatus = false;
+bool flowStatus = true;
 
 
 Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire,OLED_RESET);
@@ -316,17 +316,18 @@ void displayMenu(void * parameters){
                 {
                 
                     driprateset = encoderCounter;
-                    display.println("drop rate set");
+                    //Serial.println("drop rate set");
+                    snprintf(buffer,15,"driprate set");
                     //old drip can be send to setencounter if necessery
                 }break;
                 case 1 : //dripfactor
                 { 
-                    display.println("dripfactor set");
+                    Serial.println("dripfactor set");
                     dropfactor = encoderCounter;
                 }break;
                 case 2 :  //mlinfusion
                 {
-                    display.println("volume to be infused is set");
+                    Serial.println("volume to be infused is set");
                     volumetobeinfused =encoderCounter;
                 }break;
             } 
@@ -375,7 +376,6 @@ void flowstop(){
         servo1.write(0);
     }
     else {
-        servo1.write(90);
+        servo1.write(60);
     }
 }
-
