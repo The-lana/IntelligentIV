@@ -316,19 +316,39 @@ void displayMenu(void * parameters){
                 {
                 
                     driprateset = encoderCounter;
+<<<<<<< HEAD
                     //Serial.println("drop rate set");
                     snprintf(buffer,30,"driprate set");
+=======
+                    snprintf(buffer,15,"drip rate set as %d ml/hr",driprateset);
+                    if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
+                         Serial.println("queue full");
+                 }
+                    Serial.println("drop rate set");
+>>>>>>> fe0f53ebdd5ef01661ce0955371900cee6175a76
                     //old drip can be send to setencounter if necessery
                 }break;
-                case 1 : //dripfactor
+                case 1 : //dropfactor
                 { 
+<<<<<<< HEAD
                     Serial.println("dripfactor set");
+=======
+                    Serial.println("dropfactor set");
+>>>>>>> fe0f53ebdd5ef01661ce0955371900cee6175a76
                     dropfactor = encoderCounter;
+                    snprintf(buffer,15,"dropfactor set as %d ml/hr",dropfactor);
+                    if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
+                         Serial.println("queue full");
+                 }
                 }break;
                 case 2 :  //mlinfusion
                 {
                     Serial.println("volume to be infused is set");
                     volumetobeinfused =encoderCounter;
+                    snprintf(buffer,15,"volumetobeinfused set as %d ml/hr",volumetobeinfused);
+                    if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
+                         Serial.println("queue full");
+                 }
                 }break;
             } 
             btnCount = 0;
