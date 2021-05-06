@@ -37,7 +37,7 @@ Servo servo1;
  */
 static TimerHandle_t handle_timer = xTimerCreate(
   "menu hold timer",
-  30000/portTICK_PERIOD_MS,
+  60000/portTICK_PERIOD_MS,
   pdFALSE,
   (void*)0,
   timercallback);
@@ -241,7 +241,7 @@ void displayMenu(void * parameters){
 
             //
         }
-            Serial.println("Menu");
+         
         if(menucount!= oldmenuCount){
        /* if(xQueueSend(serialqueue,&menu[menucount],0)==pdFALSE){
             Serial.println("queue full");
@@ -316,27 +316,18 @@ void displayMenu(void * parameters){
                 {
                 
                     driprateset = encoderCounter;
-<<<<<<< HEAD
-                    //Serial.println("drop rate set");
-                    snprintf(buffer,30,"driprate set");
-=======
-                    snprintf(buffer,15,"drip rate set as %d ml/hr",driprateset);
+                    snprintf(buffer,40,"drip rate set as %d ml/hr",driprateset);
                     if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
                          Serial.println("queue full");
                  }
                     Serial.println("drop rate set");
->>>>>>> fe0f53ebdd5ef01661ce0955371900cee6175a76
                     //old drip can be send to setencounter if necessery
                 }break;
                 case 1 : //dropfactor
                 { 
-<<<<<<< HEAD
-                    Serial.println("dripfactor set");
-=======
                     Serial.println("dropfactor set");
->>>>>>> fe0f53ebdd5ef01661ce0955371900cee6175a76
                     dropfactor = encoderCounter;
-                    snprintf(buffer,15,"dropfactor set as %d ml/hr",dropfactor);
+                    snprintf(buffer,40,"dropfactor set as %d ml/hr",dropfactor);
                     if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
                          Serial.println("queue full");
                  }
@@ -345,15 +336,19 @@ void displayMenu(void * parameters){
                 {
                     Serial.println("volume to be infused is set");
                     volumetobeinfused =encoderCounter;
-                    snprintf(buffer,15,"volumetobeinfused set as %d ml/hr",volumetobeinfused);
+                    snprintf(buffer,40,"volumetobeinfused set as %d ml/hr",volumetobeinfused*100);
                     if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
                          Serial.println("queue full");
                  }
                 }break;
             } 
             btnCount = 0;
+            vTaskDelay(portTICK_PERIOD_MS);
+            vTaskResume(handle_doCalculation);
+
+            vTaskSuspend(NULL);
          }
-            vTaskDelay(35/portTICK_PERIOD_MS);
+            vTaskDelay(20/portTICK_PERIOD_MS);
     }
 
 
