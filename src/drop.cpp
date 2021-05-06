@@ -241,7 +241,7 @@ void displayMenu(void * parameters){
 
             //
         }
-        
+            Serial.println("Menu");
         if(menucount!= oldmenuCount){
        /* if(xQueueSend(serialqueue,&menu[menucount],0)==pdFALSE){
             Serial.println("queue full");
@@ -317,7 +317,7 @@ void displayMenu(void * parameters){
                 
                     driprateset = encoderCounter;
                     //Serial.println("drop rate set");
-                    snprintf(buffer,15,"driprate set");
+                    snprintf(buffer,30,"driprate set");
                     //old drip can be send to setencounter if necessery
                 }break;
                 case 1 : //dripfactor
