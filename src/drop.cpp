@@ -388,9 +388,8 @@ void servoinit(){
 
 void flowstop(){
     if(flowStatus) {
-        servo1.write(0);
-    delay(1000);
+        servo1.write(0); }
+    else    {
         servo1.write(90);
-    delay(15000);
     }
 }

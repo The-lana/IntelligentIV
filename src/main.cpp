@@ -24,7 +24,7 @@ xTaskCreatePinnedToCore(
   NULL,
   2,
   NULL,
-  CONFIG_ARDUINO_RUNNING_CORE
+  0
 );
 
 
@@ -100,7 +100,7 @@ xTaskCreatePinnedToCore(
   NULL,
   2,
   NULL,
-  CONFIG_ARDUINO_RUNNING_CORE
+  0
 );
 
 
@@ -111,7 +111,7 @@ xTaskCreatePinnedToCore(
   NULL,
   1,
   NULL,
-  CONFIG_ARDUINO_RUNNING_CORE
+  0
 );
 
 
