@@ -26,7 +26,7 @@
 extern TaskHandle_t handle_doCalculation;
 extern TaskHandle_t handle_displayMenu;
 extern QueueHandle_t mqttqueue;
-
+extern bool flowStatus;
 
 
 void IRAM_ATTR dropInterrupt(void);

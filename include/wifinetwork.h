@@ -14,7 +14,7 @@
 
 
 
-extern bool flowstatus;
+extern bool flowStatus;
 
 
 void keepwifialive(void * parameters);
