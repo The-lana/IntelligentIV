@@ -8,6 +8,7 @@
 #include "Adafruit_GFX.h"
 #include "Adafruit_SSD1306.h"
 #include "Servo.h"
+#include "IV.h"
 
 #define IRPIN 13
 #define CLK 25
@@ -25,6 +26,7 @@
 extern TaskHandle_t handle_doCalculation;
 extern TaskHandle_t handle_displayMenu;
 extern QueueHandle_t mqttqueue;
+extern bool flowStatus;
 
 
 void IRAM_ATTR dropInterrupt(void);

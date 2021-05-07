@@ -7,10 +7,7 @@ long long int interuptOldDropTime=0; // keeping old time to check difference
 int protectedDropCount=0; // drop count protected from interrupts
 float protectedDropTime=1; // drop time protected form interrupts
 int oldDropcount = 0;// to check for changes in dropcount
-uint8_t dropfactor = 20; //  drop factor of the iv set
-int driprate = 0; // rate of flow
-int volumeinfused = 0;
-int volumetobeinfused = 1000;
+IV_Type iv;
 uint8_t btnCount = 0;// count number of times button is pressed.
 int8_t menucount = 0;
 int8_t oldmenuCount = 1;
@@ -25,7 +22,6 @@ int oldencodervalue = 0;
 int driprateset=0,dripfactorset=0,mlinfused=0;
 int temp=0;
 bool flowStatus = true;
-
 
 Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire,OLED_RESET);
 Servo servo1;
@@ -83,6 +79,10 @@ void IRAM_ATTR dropInterrupt(void){
  */
 
 void doCalculation(void * parameters){
+iv.driprate = 0;
+iv.dropfactor = 20;
+iv.volumeinfused = 0;
+iv.volumetobeinfused = 500;
 for(;;){
     // stopping interrupts to copy over data without changes.
     noInterrupts();
@@ -94,16 +94,16 @@ for(;;){
     char displaybuffer[50];
     //check if there is any change in number of drops.
     if(protectedDropCount != oldDropcount){
-        volumeinfused = protectedDropCount/dropfactor;
-        driprate = 360000/(dropfactor*protectedDropTime);
-        snprintf(buffer,50,"volume infused : %d  drip rate : %d \n",volumeinfused,driprate);
+        iv.volumeinfused = protectedDropCount/iv.dropfactor;
+        iv.driprate = 360000/(iv.dropfactor*protectedDropTime);
+        snprintf(buffer,50,"volume infused : %d  drip rate : %d \n",iv.volumeinfused,iv.driprate);
         if(xQueueSend(serialqueue,&buffer,0) == pdFALSE){
             Serial.println("Serial queue full");
         }
-        if(xQueueSend(mqttqueue,&buffer,0) == pdFALSE){
-            //Serial.println("mqtt queue full");
+        if(xQueueSend(mqttqueue,&iv,0) == pdFALSE){
+            Serial.println("mqtt queue full");
         }
-        snprintf(displaybuffer,50,"%d ml/hr",driprate);
+        snprintf(displaybuffer,50,"%d ml/hr",iv.driprate);
         if(xQueueSend(displayqueue,&displaybuffer,0) == pdFALSE){
             Serial.println("display queue full");
         }
@@ -326,8 +326,8 @@ void displayMenu(void * parameters){
                 case 1 : //dropfactor
                 { 
                     Serial.println("dropfactor set");
-                    dropfactor = encoderCounter;
-                    snprintf(buffer,40,"dropfactor set as %d ml/hr",dropfactor);
+                    iv.dropfactor = encoderCounter;
+                    snprintf(buffer,40,"dropfactor set as %d ml/hr",iv.dropfactor);
                     if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
                          Serial.println("queue full");
                  }
@@ -335,8 +335,8 @@ void displayMenu(void * parameters){
                 case 2 :  //mlinfusion
                 {
                     Serial.println("volume to be infused is set");
-                    volumetobeinfused =encoderCounter;
-                    snprintf(buffer,40,"volumetobeinfused set as %d ml/hr",volumetobeinfused*100);
+                    iv.volumetobeinfused =encoderCounter;
+                    snprintf(buffer,40,"volumetobeinfused set as %d ml/hr",iv.volumetobeinfused*100);
                     if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
                          Serial.println("queue full");
                  }

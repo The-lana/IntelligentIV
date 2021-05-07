@@ -2,7 +2,10 @@
 
 
 const char* ID = "DEVICE1";
-const char* IVTOPIC =  "DEVICE1/IV";
+const char* DRIPRATE_TOPIC =  "DEVICE1/DROPRATE";
+const char* DROPFACTOR_TOPIC =  "DEVICE1/DRIPFACTOR";
+const char* VOLUMEINFUSED_TOPIC =  "DEVICE1/VOLUMEINFUSED";
+///const char* IVTOPIC =  "DEVICE1/IV";
 const char* MQTTBROKER =  "192.168.1.8";
 const char* WILLMSG = "Going offline";
 const char* WILLTOPIC = "DEVICE1/WILL";
@@ -11,7 +14,7 @@ const char* WILLTOPIC = "DEVICE1/WILL";
 WiFiClient espClient;
 PubSubClient client(MQTTBROKER,1883,espClient);
 
-QueueHandle_t mqttqueue = xQueueCreate(10,sizeof(char)*50) ;
+QueueHandle_t mqttqueue = xQueueCreate(10,sizeof(IV_Type)) ;
 //client.setServer(mqtt_server, 1883);
 
 void keepwifialive(void * parameters){
@@ -46,11 +49,14 @@ void keepwifialive(void * parameters){
 
 void mqttTask(void * parameters){
   for(;;){
-    char buffer[50];
+    IV_Type device1;
+    char buffer[10];
     if(client.connected()){
       client.loop();
-      while(xQueueReceive(mqttqueue,(void*) &buffer,0) == pdTRUE){
-        client.publish(IVTOPIC,buffer);
+      while(xQueueReceive(mqttqueue,(void*) &device1,0) == pdTRUE){
+        client.publish(DROPFACTOR_TOPIC,itoa(device1.dropfactor,buffer,10));
+        client.publish(DRIPRATE_TOPIC,itoa(device1.driprate,buffer,10));
+        client.publish(VOLUMEINFUSED_TOPIC,itoa(device1.volumeinfused,buffer,10));
       }
     }else{
       //Serial.println("client not connected");
@@ -66,7 +72,7 @@ void callback( char* topic, byte* payload, unsigned int length){
 
   Serial.print("message arrived on : ");
   Serial.println(topic);
-  flowstatus = !flowstatus;
+  flowStatus = !flowStatus;
 
 
 }

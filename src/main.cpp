@@ -16,7 +16,7 @@ servoinit();
 
 
 
-/**
+
 xTaskCreatePinnedToCore(
   keepwifialive,
   "keep_wifi_alive",
@@ -26,7 +26,7 @@ xTaskCreatePinnedToCore(
   NULL,
   CONFIG_ARDUINO_RUNNING_CORE
 );
-*/
+
 
 xTaskCreatePinnedToCore(
   displaySerial,
@@ -92,7 +92,7 @@ if (handle_doCalculation!=NULL && handle_displayMenu!=NULL)
 else{
   Serial.println("handle is null");
 }
-/**
+
 xTaskCreatePinnedToCore(
   keepMQTTConnected,
   "keep mqtt connection active",
@@ -102,8 +102,8 @@ xTaskCreatePinnedToCore(
   NULL,
   CONFIG_ARDUINO_RUNNING_CORE
 );
-*/
-/**
+
+
 xTaskCreatePinnedToCore(
   mqttTask,
   "send items to mqtt",
@@ -113,7 +113,7 @@ xTaskCreatePinnedToCore(
   NULL,
   CONFIG_ARDUINO_RUNNING_CORE
 );
-*/
+
 
 attachInterrupt(digitalPinToInterrupt(IRPIN),dropInterrupt,HIGH);
 
