@@ -5,7 +5,7 @@
 
 void setup(){
 
-Serial.begin(9600);
+Serial.begin(115200);
 // connect to wifi
 pinMode(CLK,INPUT);
 pinMode(DT,INPUT);
