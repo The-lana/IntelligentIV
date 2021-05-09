@@ -24,7 +24,7 @@ xTaskCreatePinnedToCore(
   NULL,
   2,
   NULL,
-  0
+  CONFIG_ARDUINO_RUNNING_CORE
 );
 
 
@@ -53,6 +53,7 @@ if(initilizeDisplay()){
 }else{
   Serial.println("Oled not available");
 }
+
 xTaskCreatePinnedToCore(
   doCalculation,
   "calculating values",
@@ -100,7 +101,7 @@ xTaskCreatePinnedToCore(
   NULL,
   2,
   NULL,
-  0
+  CONFIG_ARDUINO_RUNNING_CORE
 );
 
 
@@ -109,9 +110,9 @@ xTaskCreatePinnedToCore(
   "send items to mqtt",
   1024*5,
   NULL,
-  1,
+  2,
   NULL,
-  0
+  CONFIG_ARDUINO_RUNNING_CORE
 );
 
 

@@ -52,10 +52,12 @@ void mqttTask(void * parameters){
     char buffer[10];
     if(client.connected()){
       client.loop();
+      Serial.println("sending data");
       while(xQueueReceive(mqttqueue,(void*) &device1,0) == pdTRUE){
         client.publish(DROPFACTOR_TOPIC,itoa(device1.dropfactor,buffer,10));
         client.publish(DRIPRATE_TOPIC,itoa(device1.driprate,buffer,10));
         client.publish(VOLUMEINFUSED_TOPIC,itoa(device1.volumeinfused,buffer,10));
+        vTaskDelay(500/portTICK_PERIOD_MS);
       }
     }else{
       //Serial.println("client not connected");
