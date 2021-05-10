@@ -2,7 +2,7 @@
 #include "Arduino.h"
 #include "wifinetwork.h"
 #include "drop.h"
-
+#include "heartbeat.h"
 void setup(){
 
 Serial.begin(115200);
@@ -116,6 +116,19 @@ xTaskCreatePinnedToCore(
 
 
 attachInterrupt(digitalPinToInterrupt(IRPIN),dropInterrupt,HIGH);
+
+if(initPulseoximeter){
+  xTaskCreatePinnedToCore(
+    heartbeat_task,
+    "pulse oximeter task",
+    1024*5,
+    NULL,
+    2,
+    NULL,
+    CONFIG_ARDUINO_RUNNING_CORE
+  );
+
+}
 
 }
 
