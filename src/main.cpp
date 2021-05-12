@@ -103,6 +103,17 @@ xTaskCreatePinnedToCore(
   CONFIG_ARDUINO_RUNNING_CORE
 );
 
+if(initPulseoximeter()){
+  xTaskCreatePinnedToCore(
+    heartbeat_task,
+    "pulse oximeter task",
+    1024*5,
+    NULL,
+    2,
+    NULL,
+    CONFIG_ARDUINO_RUNNING_CORE
+  );
+  
 
 xTaskCreatePinnedToCore(
   mqttTask,
