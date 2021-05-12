@@ -5,6 +5,8 @@ const char* ID = "DEVICE1";
 const char* DRIPRATE_TOPIC =  "DEVICE1/DROPRATE";
 const char* DROPFACTOR_TOPIC =  "DEVICE1/DRIPFACTOR";
 const char* VOLUMEINFUSED_TOPIC =  "DEVICE1/VOLUMEINFUSED";
+const char* PULSE_TOPIC = "DEVICE1/PULSE";
+const char* O2SAT_TOPIC = "DEVICE1/O2SAT";
 ///const char* IVTOPIC =  "DEVICE1/IV";
 const char* MQTTBROKER =  "192.168.3.152";
 const char* WILLMSG = "Going offline";
@@ -17,6 +19,7 @@ WiFiClient espClient;
 PubSubClient client(MQTTBROKER,1883,espClient);
 
 QueueHandle_t mqttqueue = xQueueCreate(10,sizeof(IV_Type)) ;
+QueueHandle_t pulseoxiqueue = xQueueCreate(5,sizeof(PulseOxi_type));
 //client.setServer(mqtt_server, 1883);
 
 void keepwifialive(void * parameters){
@@ -52,6 +55,7 @@ void keepwifialive(void * parameters){
 void mqttTask(void * parameters){
   for(;;){
     IV_Type device1;
+    PulseOxi_type oximeter;
     char buffer[10];
     if(client.connected()){
       client.loop();
@@ -65,6 +69,11 @@ void mqttTask(void * parameters){
           previousflowstate = flowStatus;
         }
       }
+      while (xQueueReceive(pulseoxiqueue,(void*)&oximeter,0)==pdTRUE){
+        client.publish(PULSE_TOPIC,itoa(oximeter.heartRateAvg,buffer,10));
+        client.publish(O2SAT_TOPIC,itoa(oximeter.heartRateAvg,buffer,10));
+      }
+      
     }else{
       //Serial.println("client not connected");
     }

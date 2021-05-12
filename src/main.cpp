@@ -117,7 +117,7 @@ xTaskCreatePinnedToCore(
 
 attachInterrupt(digitalPinToInterrupt(IRPIN),dropInterrupt,HIGH);
 
-if(initPulseoximeter){
+if(initPulseoximeter()){
   xTaskCreatePinnedToCore(
     heartbeat_task,
     "pulse oximeter task",
