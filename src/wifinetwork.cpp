@@ -8,7 +8,9 @@ const char* VOLUMEINFUSED_TOPIC =  "DEVICE1/VOLUMEINFUSED";
 const char* MQTTBROKER =  "192.168.1.8";
 const char* WILLMSG = "Going offline";
 const char* WILLTOPIC = "DEVICE1/WILL";
+const char* FLOWSTATUSTOPIC = "DEVICE1/FLOWSTATUS";
 
+bool previousflowstate = false;
 
 WiFiClient espClient;
 PubSubClient client(MQTTBROKER,1883,espClient);
@@ -57,7 +59,11 @@ void mqttTask(void * parameters){
         client.publish(DROPFACTOR_TOPIC,itoa(device1.dropfactor,buffer,10));
         client.publish(DRIPRATE_TOPIC,itoa(device1.driprate,buffer,10));
         client.publish(VOLUMEINFUSED_TOPIC,itoa(device1.volumeinfused,buffer,10));
-        vTaskDelay(500/portTICK_PERIOD_MS);
+        //not sure if this will work as intended or cause some sort of race condition
+        if(previousflowstate!=flowStatus){
+          client.publish(FLOWSTATUSTOPIC,flowStatus?"TRUE":"FALSE");
+          previousflowstate = flowStatus;
+        }
       }
     }else{
       //Serial.println("client not connected");
@@ -73,7 +79,12 @@ void callback( char* topic, byte* payload, unsigned int length){
 
   Serial.print("message arrived on : ");
   Serial.println(topic);
-  flowStatus = !flowStatus;
+  if((char)payload[0] == 'T'){
+    flowStatus = true;
+  }
+  if((char)payload[0] == 'F'){
+    flowStatus = false;
+  }
 
 
 }
