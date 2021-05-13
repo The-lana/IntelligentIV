@@ -9,7 +9,7 @@
 #include "Adafruit_SSD1306.h"
 #include "Servo.h"
 #include "IV.h"
-
+#include "myservo.h"
 #define IRPIN 13
 #define CLK 25
 #define DT 26 

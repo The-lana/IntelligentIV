@@ -110,7 +110,7 @@ for(;;){
         oldDropcount = protectedDropCount;
         
     }
-    flowstop();
+    flowstop(iv.dropfactor);
     vTaskDelay(200/portTICK_PERIOD_MS);
  }
 
