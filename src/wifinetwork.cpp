@@ -5,12 +5,7 @@ const char* ID = "DEVICE1";
 const char* DRIPRATE_TOPIC =  "DEVICE1/DROPRATE";
 const char* DROPFACTOR_TOPIC =  "DEVICE1/DRIPFACTOR";
 const char* VOLUMEINFUSED_TOPIC =  "DEVICE1/VOLUMEINFUSED";
-<<<<<<< HEAD
 const char* MQTTBROKER =  "192.168.1.8";
-=======
-///const char* IVTOPIC =  "DEVICE1/IV";
-const char* MQTTBROKER =  "192.168.3.152";
->>>>>>> asim/main
 const char* WILLMSG = "Going offline";
 const char* WILLTOPIC = "DEVICE1/WILL";
 
