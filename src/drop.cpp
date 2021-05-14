@@ -7,24 +7,24 @@ long long int interuptOldDropTime=0; // keeping old time to check difference
 int protectedDropCount=0; // drop count protected from interrupts
 float protectedDropTime=1; // drop time protected form interrupts
 int oldDropcount = 0;// to check for changes in dropcount
-IV_Type iv;
+IV_Type iv;         //struct that contains dropfactor,driprate,volinf and vol to be inf
 uint8_t btnCount = 0;// count number of times button is pressed.
 int8_t menucount = 0;
 int8_t oldmenuCount = 1;
-QueueHandle_t serialqueue = xQueueCreate(5,sizeof(char)*50) ;
+QueueHandle_t serialqueue = xQueueCreate(5,sizeof(char)*50) ;   //create serial que with length 5 of 50 chars
 QueueHandle_t displayqueue = xQueueCreate(5,sizeof(char)*50) ;
 TaskHandle_t handle_doCalculation = NULL;
 TaskHandle_t handle_displayMenu = NULL;
 uint8_t aState=0;
 uint8_t aLastState=0;
-int encoderCounter=0;
+int encoderCounter=0;           
 int oldencodervalue = 0;
 int driprateset=0,dripfactorset=0,mlinfused=0;
 int temp=0;
 bool flowStatus = true;
 
 Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire,OLED_RESET);
-Servo servo1;
+//Servo servo1;
 
 
 /**
@@ -39,7 +39,7 @@ static TimerHandle_t handle_timer = xTimerCreate(
   timercallback);
 
 
-
+//set menu content as 2d array
 
 char menu[3][15] = {
     "Drop rate",
@@ -61,11 +61,11 @@ void timercallback(TimerHandle_t xtimer){
  * 
  */
 void IRAM_ATTR dropInterrupt(void){
-    int newtime = millis();
-    if(newtime-interuptOldDropTime > 200){
-        interuptDropTime = (newtime - interuptOldDropTime)/10;
-        interuptDropCount++;
-        interuptOldDropTime = newtime;
+    int newtime = millis();                         //time when drop falls
+    if(newtime-interuptOldDropTime > 200){          //to reduce one drop to be counted more than once,the drop is counted only if the time difference is greater than 200ms
+        interuptDropTime = (newtime - interuptOldDropTime)/10;      //why divide by 10
+        interuptDropCount++;                        //count drop
+        interuptOldDropTime = newtime;              //set olddroptime for next cycle
     }
 
 }
@@ -86,7 +86,7 @@ iv.volumetobeinfused = 500;
 for(;;){
     // stopping interrupts to copy over data without changes.
     noInterrupts();
-    protectedDropCount = interuptDropCount;
+    protectedDropCount = interuptDropCount;     
     protectedDropTime = interuptDropTime;
     //renable interrupts
     interrupts();
@@ -95,22 +95,27 @@ for(;;){
     //check if there is any change in number of drops.
     if(protectedDropCount != oldDropcount){
         iv.volumeinfused = protectedDropCount/iv.dropfactor;
-        iv.driprate = 360000/(iv.dropfactor*protectedDropTime);
-        snprintf(buffer,50,"volume infused : %d  drip rate : %d \n",iv.volumeinfused,iv.driprate);
+        iv.driprate = 360000/(iv.dropfactor*protectedDropTime);     //calculate vol inf from dropcount using dropfactor
+        snprintf(buffer,50,"volume infused : %d  drip rate : %d \n",iv.volumeinfused,iv.driprate);      
+        //data is sent to buffer in format
         if(xQueueSend(serialqueue,&buffer,0) == pdFALSE){
+            //xQueuesend reutrns FALSE if buffer was not placed on serialque //0 is number of ticks to wait for space
             Serial.println("Serial queue full");
         }
         if(xQueueSend(mqttqueue,&iv,0) == pdFALSE){
+            //xQueuesend reutrns FALSE if iv was not placed on mqttque //0 is number of ticks to wait for space
             Serial.println("mqtt queue full");
         }
         snprintf(displaybuffer,50,"%d ml/hr",iv.driprate);
+        //data is sent to display buffer in format
         if(xQueueSend(displayqueue,&displaybuffer,0) == pdFALSE){
+            //xQueuesend reutrns FALSE if displaybuffer was not placed on displayque //0 is number of ticks to wait for space
             Serial.println("display queue full");
         }
-        oldDropcount = protectedDropCount;
+        oldDropcount = protectedDropCount;      //write previous value
         
     }
-    flowstop(iv.dropfactor);
+    flowstop(iv.driprate);          //why is this here??
     vTaskDelay(200/portTICK_PERIOD_MS);
  }
 
@@ -130,7 +135,7 @@ void btnTask(void * parameters){
             //Serial.println("timer started");
             if (handle_doCalculation!=NULL && handle_displayMenu!=NULL){
             vTaskSuspend(handle_doCalculation);
-           // Serial.println("suspend do calculation");
+           // Serial.println("suspend do calculation");//calcs are stopped and menu is given priority while interrupt works
             vTaskResume(handle_displayMenu);
             //Serial.println("resume displaymenu");
             }else{
@@ -153,6 +158,7 @@ void btnTask(void * parameters){
 void displaySerial(void * parameters){
     for(;;){
         char buffer[100];
+        //recieves buffer value that contains driprate and vol inf
         if(xQueueReceive(serialqueue,(void*) &buffer,0)==pdTRUE){
         Serial.println(buffer);
         }
@@ -166,12 +172,13 @@ void displaySerial(void * parameters){
 void displayOLED(void * parameters){
     for(;;){
         char buffer[50];
+        //receives values from display que containing driprate or 
         if(xQueueReceive(displayqueue,(void*)&buffer,0)==pdTRUE){
             Serial.print("sending to display: ");
             Serial.print(buffer);
             display.clearDisplay();
             display.setCursor(0,0);
-            display.println(buffer);
+            display.println(buffer);        //displaying buffer value
             display.display();
 
         }
@@ -207,7 +214,7 @@ void doencoder(){
 
 //ente pokirtharam
 //entem
-int setvalue(int temp)
+int setvalue(int temp) //to set value of driprate/droprate/vol using a temp variable for repetition
 {
     if(encoderCounter>temp){
          temp++;
@@ -225,19 +232,19 @@ int setvalue(int temp)
 void displayMenu(void * parameters){
     for(;;){
         char buffer[12];
-        if(btnCount==1){
+        if(btnCount==1){                    //on first button count menu is displayed
         doencoder(); // menu change
-        if(encoderCounter- oldencodervalue > 1){
-            menucount++;
-            if(menucount > 2) {menucount = 0;}
+        if(encoderCounter- oldencodervalue > 1){        //to check for rotation in one direction
+            menucount++;                               
+            if(menucount > 2) {menucount = 0;}          //limit count from 0-2
             oldencodervalue = encoderCounter;
 
            
         }
-        if(encoderCounter - oldencodervalue < -1){
+        if(encoderCounter - oldencodervalue < -1){      //check for rotation in opp dir
             menucount--;
-            if(menucount < 0){menucount = 2;}
-            oldencodervalue = encoderCounter;
+            if(menucount < 0){menucount = 2;}           //limiting count in 0-2
+            oldencodervalue = encoderCounter;       //set previous value for next cycle
 
             //
         }
@@ -246,7 +253,7 @@ void displayMenu(void * parameters){
        /* if(xQueueSend(serialqueue,&menu[menucount],0)==pdFALSE){
             Serial.println("queue full");
         }*/
-        if(xQueueSend(displayqueue,&menu[menucount],0) == pdFALSE){
+        if(xQueueSend(displayqueue,&menu[menucount],0) == pdFALSE){     //send the menu strings through displayque to be displayed
             Serial.println("display queue full");
         }
         oldmenuCount = menucount;
@@ -255,7 +262,7 @@ void displayMenu(void * parameters){
         }
 
       
-         if(btnCount==2)
+         if(btnCount==2)        //on second buttoncount values can be set depending on the value of menucount during press of button
              switch(menucount)
             {
                 case 0 : //driprate
@@ -263,16 +270,16 @@ void displayMenu(void * parameters){
                     //encoderCounter=driprateset;
                     
                     doencoder();
-                    if(encoderCounter<0)
+                    if(encoderCounter<0)        //no neg values required
                         encoderCounter=0;
-                    if(encoderCounter!=oldencodervalue){
+                    if(encoderCounter!=oldencodervalue){            //check if encoder has been rotated
                         driprateset=setvalue(driprateset);
                         
-                    snprintf(buffer,15,"%d ml/hr",driprateset);
-                    if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
+                    snprintf(buffer,15,"%d ml/hr",driprateset);         //send value to buffer
+                    if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){        //check for space in display que to place new value 
                     Serial.println("queue full");
                  }
-                    oldencodervalue = encoderCounter;
+                    oldencodervalue = encoderCounter;           //update oldencoder value for next loop
              }
                     
                     
@@ -309,14 +316,14 @@ void displayMenu(void * parameters){
                     }
                 }break;
             }
-         if(btnCount==3){
-             switch(menucount)
+         if(btnCount==3){       //on buttoncount 3 the value is confirmed and an output is shown on display
+             switch(menucount)      //based on earlier menucount value
             {
                 case 0 : //driprate
                 {
                 
                     driprateset = encoderCounter;
-                    snprintf(buffer,40,"drip rate set as %d ml/hr",driprateset);
+                    snprintf(buffer,40,"drip rate set as %d ml/hr",driprateset);        //sending value to displayque
                     if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
                          Serial.println("queue full");
                  }
@@ -327,7 +334,7 @@ void displayMenu(void * parameters){
                 { 
                     Serial.println("dropfactor set");
                     iv.dropfactor = encoderCounter;
-                    snprintf(buffer,40,"dropfactor set as %d ml/hr",iv.dropfactor);
+                    snprintf(buffer,40,"dropfactor set as %d ml/hr",iv.dropfactor);         //sending to displayque
                     if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
                          Serial.println("queue full");
                  }
@@ -342,7 +349,7 @@ void displayMenu(void * parameters){
                  }
                 }break;
             } 
-            btnCount = 0;
+            btnCount = 0;           //reset buttoncount as 0
             vTaskDelay(portTICK_PERIOD_MS);
             vTaskResume(handle_doCalculation);
 
@@ -362,17 +369,17 @@ void displayMenu(void * parameters){
  */
 bool initilizeDisplay(){
     
-    if(!display.begin(SSD1306_SWITCHCAPVCC,0x3C)){
+    if(!display.begin(SSD1306_SWITCHCAPVCC,0x3C)){          //check if display is working
         Serial.println("false");
         return false;
          }
     
-    display.clearDisplay();
+    display.clearDisplay();                 //clear previouus content
     display.setTextColor(WHITE);
-    display.setTextSize(1);
-    display.setCursor(0,0);
-    display.println("display working");
-    Serial.println("display setup done");
+    display.setTextSize(1);                 //set text size
+    display.setCursor(0,0);                 //set cursor to beginning 
+    display.println("display working");     //display on screen to confirm working
+    Serial.println("display setup done");   //display on serial monitor to confirm working
     display.display();
     //delay(500);
     return true;
@@ -380,16 +387,12 @@ bool initilizeDisplay(){
 }
 
 
-void servoinit(){
-
-    servo1.attach(SERVOPIN);
-
-}
-
-void flowstop(){
+void flowstop(int driprate){
     if(flowStatus) {
-        servo1.write(0); }
+        if(driprate)
+        motoropen();
+             }
     else    {
-        servo1.write(90);
+     //  motorstop();
     }
 }
