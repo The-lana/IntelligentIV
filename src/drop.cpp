@@ -17,8 +17,8 @@ TaskHandle_t handle_doCalculation = NULL;
 TaskHandle_t handle_displayMenu = NULL;
 uint8_t aState=0;
 uint8_t aLastState=0;
-int encoderCounter=0;           
-int oldencodervalue = 0;
+int encoderCounter=0;       //to find how  much the encoder has turned    
+int oldencodervalue = 0;    //storing old value for comparison
 int driprateset=0,dripfactorset=0,mlinfused=0;
 int temp=0;
 bool flowStatus = true;
@@ -48,7 +48,8 @@ char menu[3][15] = {
 };
 
 
-void timercallback(TimerHandle_t xtimer){
+void timercallback(TimerHandle_t xtimer){       
+    //continue with do calculation task after the menu is diplayed for a paricular period
     btnCount = 0 ; 
     vTaskSuspend(handle_displayMenu);
     vTaskResume(handle_doCalculation);
@@ -63,7 +64,7 @@ void timercallback(TimerHandle_t xtimer){
 void IRAM_ATTR dropInterrupt(void){
     int newtime = millis();                         //time when drop falls
     if(newtime-interuptOldDropTime > 200){          //to reduce one drop to be counted more than once,the drop is counted only if the time difference is greater than 200ms
-        interuptDropTime = (newtime - interuptOldDropTime)/10;      //why divide by 10
+        interuptDropTime = (newtime - interuptOldDropTime)/10;      //time between drops is stored..for calculating ml per hr
         interuptDropCount++;                        //count drop
         interuptOldDropTime = newtime;              //set olddroptime for next cycle
     }
@@ -272,14 +273,14 @@ void displayMenu(void * parameters){
                     doencoder();
                     if(encoderCounter<0)        //no neg values required
                         encoderCounter=0;
-                    if(encoderCounter!=oldencodervalue){            //check if encoder has been rotated
+                    if(encoderCounter!=oldencodervalue){                    //check if encoder has been rotated
                         driprateset=setvalue(driprateset);
                         
-                    snprintf(buffer,15,"%d ml/hr",driprateset);         //send value to buffer
-                    if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){        //check for space in display que to place new value 
+                    snprintf(buffer,15,"%d ml/hr",driprateset);            //send value to buffer
+                    if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){       //check for space in display que to place new value 
                     Serial.println("queue full");
                  }
-                    oldencodervalue = encoderCounter;           //update oldencoder value for next loop
+                    oldencodervalue = encoderCounter;                      //update oldencoder value for next loop
              }
                     
                     
