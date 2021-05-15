@@ -1,4 +1,4 @@
-// PID balance   
+// PID balance 
 
 #include <drop.h>
 #include <myservo.h>
@@ -11,7 +11,7 @@ int Read = 0;
 extern int driprateset;
 extern IV_Type iv;
 float flowrate = 0.0;     //flowrate initial
-float elapsedTime, times, timePrev;        //Variables for time control
+float elapsedTime,  times = millis(), timePrev;        //Variables for time control
 float flowrate_previous_error, flowrate_error;
 int period = 50;  //Refresh rate period of the loop is 50ms
 ///////////////////////////////////////////////////////
@@ -24,16 +24,15 @@ float kd=3100; //Mine was 3100
 float flowrate_setpoint = driprateset;           //Should be the distance from sensor to the middle of the bar in mm
                                         //rotor value
 float PID_p, PID_i, PID_d, PID_total;
+
 ///////////////////////////////////////////////////////
 
 
 
-void setup() {
- 
-  times = millis();
-}
+
 
 void loop() {
+   times = millis();
   if (millis() > times+period)
   {
     times = millis();    

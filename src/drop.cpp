@@ -388,15 +388,15 @@ bool initilizeDisplay(){
 }
 
 
-void flowstop(){
+/*void flowstop(){
 
     if(flowStatus!=oldflowstatus) {
         if(flowStatus){
-        motoropen(3500);
+        motoropen();
              }
     else    {
-        motorclose(3500);
+        motorclose();
     }
     oldflowstatus = flowStatus;
 }
-}
+} */
