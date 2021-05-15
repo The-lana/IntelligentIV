@@ -62,9 +62,9 @@ void loop() {
     if(PID_total > 160) {PID_total = 160; } 
  */ 
     if(PID_total>0)
-    motorclose(PID_total)
+    motorclose(PID_total);
     if(PID_total<0) 
-    motoropen(PID_total*(-1))// set rotation time according to PID
+    motoropen(PID_total*(-1));// set rotation time according to PID
     flowrate_previous_error = flowrate_error;
   }
 }
