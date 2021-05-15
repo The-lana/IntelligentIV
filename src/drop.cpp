@@ -22,7 +22,7 @@ int oldencodervalue = 0;    //storing old value for comparison
 int driprateset=0,dripfactorset=0,mlinfused=0;
 int temp=0;
 bool flowStatus = true;
-
+static bool oldflowstatus = true;
 Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire,OLED_RESET);
 //Servo servo1;
 
@@ -116,7 +116,7 @@ for(;;){
         oldDropcount = protectedDropCount;      //write previous value
         
     }
-    flowstop(iv.driprate);          //why is this here??
+    flowstop();          //why is this here??
     vTaskDelay(200/portTICK_PERIOD_MS);
  }
 
@@ -388,12 +388,15 @@ bool initilizeDisplay(){
 }
 
 
-void flowstop(int driprate){
-    if(flowStatus) {
-        if(driprate)
+void flowstop(){
+
+    if(flowStatus!=oldflowstatus) {
+        if(flowStatus){
         motoropen();
              }
     else    {
-     //  motorstop();
+        motorclose();
     }
+    oldflowstatus = flowStatus;
+}
 }

@@ -1,4 +1,4 @@
-
+#include "myservo.h"
 #include "Arduino.h"             //existing lib included
 #include "wifinetwork.h"         //wifinetwork.h was defined and added
 #include "drop.h"               //drop.h was defined and added
@@ -12,7 +12,7 @@ pinMode(DT,INPUT);          //dt pin defined as pin 26 in drop.h is set as input
 pinMode(SW,INPUT_PULLUP);   //sw pin defined as pin 27 in drop.h is set as pullup
 
 
-servoinit();              //servo initialised
+servoinit();              //servo initialized
 
 
 
