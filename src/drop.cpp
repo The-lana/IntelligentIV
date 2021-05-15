@@ -387,7 +387,7 @@ bool initilizeDisplay(){
 
 }
 
-
+/*
 void flowstop(){
 
     if(flowStatus!=oldflowstatus) {
@@ -400,3 +400,4 @@ void flowstop(){
     oldflowstatus = flowStatus;
 }
 }
+*/

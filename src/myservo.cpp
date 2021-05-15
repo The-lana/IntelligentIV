@@ -11,6 +11,11 @@ void ledcAnalogWrite(uint8_t channel, uint32_t value, uint32_t valueMax){
 
   // write duty to LEDC
   ledcWrite(channel, duty); 
+
+  
+}
+void motorstop(){
+    ledcAnalogWrite(LEDC_CHANNEL_0,0);              //to stop the motor rotation from current position
 }
 void motorclose(int time){
     ledcAnalogWrite(LEDC_CHANNEL_0, 60);            //width of pulse set for one directrion
@@ -21,7 +26,4 @@ void motoropen(int time){
     ledcAnalogWrite(LEDC_CHANNEL_0,120);            //width of pulse determined for oppst direction
     vTaskDelay(time/portTICK_PERIOD_MS);
     motorstop();
-}
-void motorstop(){
-    ledcAnalogWrite(LEDC_CHANNEL_0,0);              //to stop the motor rotation from current position
 }
