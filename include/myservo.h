@@ -19,7 +19,7 @@
 
 void setupPWM();
 void ledcAnalogWrite(uint8_t channel, uint32_t value, uint32_t valueMax = 255);
-void motorclose();
-void motoropen();
+void motorclose(int time);
+void motoropen(int time);
 
 #endif
