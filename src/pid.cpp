@@ -11,7 +11,7 @@ int Read = 0;
 extern int driprateset;
 extern IV_Type iv;
 float flowrate = 0.0;     //flowrate initial
-float elapsedTime, time, timePrev;        //Variables for time control
+float elapsedTime, times, timePrev;        //Variables for time control
 float flowrate_previous_error, flowrate_error;
 int period = 50;  //Refresh rate period of the loop is 50ms
 ///////////////////////////////////////////////////////
@@ -30,13 +30,13 @@ float PID_p, PID_i, PID_d, PID_total;
 
 void setup() {
  
-  time = millis();
+  times = millis();
 }
 
 void loop() {
-  if (millis() > time+period)
+  if (millis() > times+period)
   {
-    time = millis();    
+    times = millis();    
     flowrate = iv.driprate;           // calc flowrate
     flowrate_error = driprateset - flowrate;    // determine error- error = Setpoint - inp;           
     PID_p = kp * flowrate_error;

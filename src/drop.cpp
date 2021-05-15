@@ -392,10 +392,10 @@ void flowstop(){
 
     if(flowStatus!=oldflowstatus) {
         if(flowStatus){
-        motoropen();
+        motoropen(3500);
              }
     else    {
-        motorclose();
+        motorclose(3500);
     }
     oldflowstatus = flowStatus;
 }
