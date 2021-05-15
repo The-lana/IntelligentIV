@@ -12,8 +12,8 @@ pinMode(DT,INPUT);          //dt pin defined as pin 26 in drop.h is set as input
 pinMode(SW,INPUT_PULLUP);   //sw pin defined as pin 27 in drop.h is set as pullup
 
 
-servoinit();              //servo initialized
-
+//servoinit();              //servo initialized
+setupPWM();
 
 
 
