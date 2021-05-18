@@ -1,10 +1,4 @@
-// PID balance   
-
-#include <drop.h>
-#include <myservo.h>
-
-
-
+#include "pid.h"
 
 ////////////////////////Variables///////////////////////
 int Read = 0;
@@ -27,7 +21,7 @@ float PID_p, PID_i, PID_d, PID_total;
 ///////////////////////////////////////////////////////
 
 
-void loops() {
+void doPID() {
   if (millis() > times+period)
   {
     times = millis();    
