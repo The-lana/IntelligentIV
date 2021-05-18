@@ -45,7 +45,7 @@ void heartbeat_task(void * parameters){
 
             tsLastReport = millis();
         }
-        vTaskDelay(20/portTICK_PERIOD_MS);
+        vTaskDelay(25/portTICK_PERIOD_MS);
     }
 
 }
