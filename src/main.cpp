@@ -1,7 +1,9 @@
-#include "myservo.h"
 #include "Arduino.h"             //existing lib included
 #include "wifinetwork.h"         //wifinetwork.h was defined and added
 #include "drop.h"               //drop.h was defined and added
+#include "heartbeat.h"
+#include "myservo.h"
+
 
 void setup(){
 
@@ -13,7 +15,7 @@ pinMode(SW,INPUT_PULLUP);   //sw pin defined as pin 27 in drop.h is set as pullu
 
 
 //servoinit();              //servo initialized
-
+setupPWM();
 
 
 
@@ -104,6 +106,17 @@ xTaskCreatePinnedToCore(
   CONFIG_ARDUINO_RUNNING_CORE
 );
 
+if(initPulseoximeter()){
+  xTaskCreatePinnedToCore(
+    heartbeat_task,
+    "pulse oximeter task",
+    1024*5,
+    NULL,
+    2,
+    NULL,
+    CONFIG_ARDUINO_RUNNING_CORE
+  );
+}
 
 xTaskCreatePinnedToCore(
   mqttTask,
@@ -117,7 +130,6 @@ xTaskCreatePinnedToCore(
 
 
 attachInterrupt(digitalPinToInterrupt(IRPIN),dropInterrupt,HIGH);
-
 }
 
 void loop(){
