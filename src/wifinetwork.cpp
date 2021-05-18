@@ -8,7 +8,8 @@ const char* VOLUMEINFUSED_TOPIC =  "DEVICE1/VOLUMEINFUSED";
 const char* PULSE_TOPIC = "DEVICE1/PULSE";
 const char* O2SAT_TOPIC = "DEVICE1/O2SAT";
 ///const char* IVTOPIC =  "DEVICE1/IV";
-const char* MQTTBROKER =  "192.168.3.152";
+//const char* MQTTBROKER =  "192.168.3.152";
+const char* MQTTBROKER =  "192.168.1.8";
 const char* WILLMSG = "Going offline";
 const char* WILLTOPIC = "DEVICE1/WILL";
 const char* FLOWSTATUSTOPIC = "DEVICE1/FLOWSTATUS";
@@ -59,6 +60,7 @@ void mqttTask(void * parameters){
     char buffer[10];
     if(client.connected()){
       client.loop();
+      Serial.println("sending data");
       while(xQueueReceive(mqttqueue,(void*) &device1,0) == pdTRUE){
         client.publish(DROPFACTOR_TOPIC,itoa(device1.dropfactor,buffer,10));
         client.publish(DRIPRATE_TOPIC,itoa(device1.driprate,buffer,10));

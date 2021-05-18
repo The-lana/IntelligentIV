@@ -10,8 +10,8 @@
 #include "heartbeat.h"
 
 
-#define WIFI_SSID "BSNLFTTH-880"
-#define WIFI_PSD "4872962880"
+#define WIFI_SSID "NANDANAM"
+#define WIFI_PSD "nandanam1889"
 #define WIFI_TIMEOUT 20000 
 
 

@@ -1,19 +1,21 @@
-
-#include "Arduino.h"
-#include "wifinetwork.h"
-#include "drop.h"
+#include "Arduino.h"             //existing lib included
+#include "wifinetwork.h"         //wifinetwork.h was defined and added
+#include "drop.h"               //drop.h was defined and added
 #include "heartbeat.h"
+#include "myservo.h"
+
+
 void setup(){
 
-Serial.begin(115200);
+Serial.begin(115200);     
 // connect to wifi
-pinMode(CLK,INPUT);
-pinMode(DT,INPUT);
-pinMode(SW,INPUT_PULLUP);
+pinMode(CLK,INPUT);         //clk pin deifned as pin 25 in drop.h set as input
+pinMode(DT,INPUT);          //dt pin defined as pin 26 in drop.h is set as input
+pinMode(SW,INPUT_PULLUP);   //sw pin defined as pin 27 in drop.h is set as pullup
 
 
-servoinit();
-
+//servoinit();              //servo initialized
+setupPWM();
 
 
 
@@ -53,6 +55,7 @@ if(initilizeDisplay()){
 }else{
   Serial.println("Oled not available");
 }
+
 xTaskCreatePinnedToCore(
   doCalculation,
   "calculating values",
@@ -120,7 +123,7 @@ xTaskCreatePinnedToCore(
   "send items to mqtt",
   1024*5,
   NULL,
-  1,
+  2,
   NULL,
   CONFIG_ARDUINO_RUNNING_CORE
 );
