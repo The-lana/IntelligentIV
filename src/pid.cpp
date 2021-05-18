@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // PID balance 
 
 #include <drop.h>
@@ -5,6 +6,9 @@
 
 
 
+=======
+#include "pid.h"
+>>>>>>> asim/PID
 
 ////////////////////////Variables///////////////////////
 int Read = 0;
@@ -28,7 +32,7 @@ float PID_p, PID_i, PID_d, PID_total;
 ///////////////////////////////////////////////////////
 
 
-void loops() {
+void doPID() {
   if (millis() > times+period)
   {
     times = millis();    

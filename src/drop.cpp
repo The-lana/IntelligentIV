@@ -116,6 +116,8 @@ for(;;){
         oldDropcount = protectedDropCount;      //write previous value
         
     }
+    
+    if (ENABLE_PID) doPID();
     flowstop();          //why is this here??
     vTaskDelay(200/portTICK_PERIOD_MS);
  }
@@ -399,4 +401,9 @@ bool initilizeDisplay(){
     }
     oldflowstatus = flowStatus;
 }
+<<<<<<< HEAD
 } */
+=======
+}
+
+>>>>>>> asim/PID
