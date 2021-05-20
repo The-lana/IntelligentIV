@@ -10,17 +10,20 @@
 //#include "Servo.h"
 #include "IV.h"
 #include "myservo.h"
+#include "pid.h"
 #define IRPIN 13
 #define CLK 25
 #define DT 26 
 #define SW 27
 #define SERVOPIN 19
+#define DROP_WAIT_TIME 5000
+
 
 #define SCREEN_WIDTH 128        //oled size declaration
 #define SCREEN_HEIGHT 32
 
 #define OLED_RESET -1
-
+#define ENABLE_PID 1
 
 
 extern TaskHandle_t handle_doCalculation;
