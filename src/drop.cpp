@@ -1,6 +1,7 @@
 #include "drop.h"
 
 
+
 int interuptDropCount=0;  //count number of drops inside the interrupt
 float interuptDropTime=1; // keep track of time
 long long int interuptOldDropTime=0; // keeping old time to check difference
@@ -91,6 +92,9 @@ for(;;){
     protectedDropTime = interuptDropTime;
     //renable interrupts
     interrupts();
+    if (millis()-protectedDropTime > DROP_WAIT_TIME){
+        iv.driprate = 0;
+    }
     char buffer[100];
     char displaybuffer[50];
     //check if there is any change in number of drops.

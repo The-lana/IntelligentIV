@@ -16,6 +16,8 @@
 #define DT 26 
 #define SW 27
 #define SERVOPIN 19
+#define DROP_WAIT_TIME 5000
+
 
 #define SCREEN_WIDTH 128        //oled size declaration
 #define SCREEN_HEIGHT 32

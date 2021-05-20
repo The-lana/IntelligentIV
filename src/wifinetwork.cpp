@@ -73,7 +73,7 @@ void mqttTask(void * parameters){
       }
       while (xQueueReceive(pulseoxiqueue,(void*)&oximeter,0)==pdTRUE){
         client.publish(PULSE_TOPIC,itoa(oximeter.heartRateAvg,buffer,10));
-        client.publish(O2SAT_TOPIC,itoa(oximeter.heartRateAvg,buffer,10));
+        client.publish(O2SAT_TOPIC,itoa(oximeter.O2satAvg,buffer,10));
       }
       
     }else{
