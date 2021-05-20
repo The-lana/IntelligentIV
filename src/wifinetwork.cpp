@@ -9,7 +9,7 @@ const char* PULSE_TOPIC = "DEVICE1/PULSE";
 const char* O2SAT_TOPIC = "DEVICE1/O2SAT";
 ///const char* IVTOPIC =  "DEVICE1/IV";
 //const char* MQTTBROKER =  "192.168.3.152";
-const char* MQTTBROKER =  "192.168.1.8";
+const char* MQTTBROKER =  "192.168.1.9";
 const char* WILLMSG = "Going offline";
 const char* WILLTOPIC = "DEVICE1/WILL";
 const char* FLOWSTATUSTOPIC = "DEVICE1/FLOWSTATUS";
@@ -73,7 +73,7 @@ void mqttTask(void * parameters){
       }
       while (xQueueReceive(pulseoxiqueue,(void*)&oximeter,0)==pdTRUE){
         client.publish(PULSE_TOPIC,itoa(oximeter.heartRateAvg,buffer,10));
-        client.publish(O2SAT_TOPIC,itoa(oximeter.heartRateAvg,buffer,10));
+        client.publish(O2SAT_TOPIC,itoa(oximeter.O2satAvg,buffer,10));
       }
       
     }else{
