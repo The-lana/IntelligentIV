@@ -9,7 +9,7 @@ const char* PULSE_TOPIC = "DEVICE1/PULSE";
 const char* O2SAT_TOPIC = "DEVICE1/O2SAT";
 ///const char* IVTOPIC =  "DEVICE1/IV";
 //const char* MQTTBROKER =  "192.168.3.152";
-const char* MQTTBROKER =  "192.168.1.8";
+const char* MQTTBROKER =  "192.168.1.9";
 const char* WILLMSG = "Going offline";
 const char* WILLTOPIC = "DEVICE1/WILL";
 const char* FLOWSTATUSTOPIC = "DEVICE1/FLOWSTATUS";
@@ -24,13 +24,13 @@ QueueHandle_t pulseoxiqueue = xQueueCreate(5,sizeof(PulseOxi_type));
 //client.setServer(mqtt_server, 1883);
 
 void keepwifialive(void * parameters){
-    bool wififlag = false;
+    bool wififlag = false;            //set wifi flag as false
   for(;;){
 
-    if(WiFi.status()==WL_CONNECTED){
-      if(!wififlag){
-      Serial.println("connected");
-      wififlag=true;
+    if(WiFi.status()==WL_CONNECTED){    //check if wifi connected
+      if(!wififlag){                    
+      Serial.println("connected");      //if wifi has connected now,print connected
+      wififlag=true;                    //if wifi is connected,wififlag is turned true
       }
       vTaskDelay(10000/portTICK_PERIOD_MS);
       continue;
@@ -60,8 +60,9 @@ void mqttTask(void * parameters){
     char buffer[10];
     if(client.connected()){
       client.loop();
-      Serial.println("sending data");
+
       while(xQueueReceive(mqttqueue,(void*) &device1,0) == pdTRUE){
+        Serial.println("sending data");
         client.publish(DROPFACTOR_TOPIC,itoa(device1.dropfactor,buffer,10));
         client.publish(DRIPRATE_TOPIC,itoa(device1.driprate,buffer,10));
         client.publish(VOLUMEINFUSED_TOPIC,itoa(device1.volumeinfused,buffer,10));

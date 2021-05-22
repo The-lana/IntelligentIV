@@ -37,7 +37,7 @@ void heartbeat_task(void * parameters){
         }else{
             hroxi.heartRateAvg = heartRateSum / NUM_SAMPLEPOINT_AVERAGE;
             hroxi.O2satAvg = O2satSum / NUM_SAMPLEPOINT_AVERAGE;
-
+            Serial.printf("heart rate:%d \t O2Sat : %d \n",hroxi.heartRateAvg,hroxi.O2satAvg);
             heartRateSum = 0;
             O2satSum = 0;
             counter = 0;

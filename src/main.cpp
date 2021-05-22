@@ -104,7 +104,7 @@ xTaskCreatePinnedToCore(
   2,
   NULL,
   CONFIG_ARDUINO_RUNNING_CORE
-);
+); 
 
 if(initPulseoximeter()){
   xTaskCreatePinnedToCore(
@@ -118,6 +118,7 @@ if(initPulseoximeter()){
   );
 }
 
+
 xTaskCreatePinnedToCore(
   mqttTask,
   "send items to mqtt",
@@ -129,7 +130,7 @@ xTaskCreatePinnedToCore(
 );
 
 
-attachInterrupt(digitalPinToInterrupt(IRPIN),dropInterrupt,HIGH);
+attachInterrupt(digitalPinToInterrupt(IRPIN),dropInterrupt,FALLING);
 }
 
 void loop(){
