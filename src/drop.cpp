@@ -56,6 +56,7 @@ void timercallback(TimerHandle_t xtimer){
     vTaskResume(handle_doCalculation);
 }
 
+
     
 
 /**
@@ -63,9 +64,9 @@ void timercallback(TimerHandle_t xtimer){
  * 
  */
 void IRAM_ATTR dropInterrupt(void){
-    int newtime = millis();                         //time when drop falls
+    long long int newtime = millis();                         //time when drop falls
     if(newtime-interuptOldDropTime > 200){          //to reduce one drop to be counted more than once,the drop is counted only if the time difference is greater than 200ms
-        interuptDropTime = (newtime - interuptOldDropTime)/10;      //time between drops is stored..for calculating ml per hr
+        interuptDropTime = (float)(newtime - interuptOldDropTime);      //time between drops is stored..for calculating ml per hr
         interuptDropCount++;                        //count drop
         interuptOldDropTime = newtime;              //set olddroptime for next cycle
     }
@@ -85,6 +86,8 @@ iv.driprate = 0;
 iv.dropfactor = 20;
 iv.volumeinfused = 0;
 iv.volumetobeinfused = 500;
+bool flag = false;
+long int last_zero = 0;
 for(;;){
     // stopping interrupts to copy over data without changes.
     noInterrupts();
@@ -92,15 +95,30 @@ for(;;){
     protectedDropTime = interuptDropTime;
     //renable interrupts
     interrupts();
-    if (millis()-protectedDropTime > DROP_WAIT_TIME){
-        iv.driprate = 0;
-    }
     char buffer[100];
     char displaybuffer[50];
+    if ((millis()-last_zero > 10000) && flag){
+        iv.driprate = 0;
+        // snprintf(buffer,50,"volume infused : %d  drip rate : %d \n",iv.volumeinfused,iv.driprate);      
+        // //data is sent to buffer in format
+        // if(xQueueSend(serialqueue,&buffer,0) == pdFALSE){
+        //     //xQueuesend reutrns FALSE if buffer was not placed on serialque //0 is number of ticks to wait for space
+        //     Serial.println("Serial queue full");
+        // }
+        if(xQueueSend(mqttqueue,&iv,0) == pdFALSE){
+            //xQueuesend reutrns FALSE if iv was not placed on mqttque //0 is number of ticks to wait for space
+            Serial.println("mqtt queue full");
+        }
+        Serial.printf("set to zero at %ld",millis());
+         
+        last_zero = millis();
+        flag = false;
+    }
+
     //check if there is any change in number of drops.
     if(protectedDropCount != oldDropcount){
         iv.volumeinfused = protectedDropCount/iv.dropfactor;
-        iv.driprate = 360000/(iv.dropfactor*protectedDropTime);     //calculate vol inf from dropcount using dropfactor
+        iv.driprate = 3600000/(iv.dropfactor*protectedDropTime);     //calculate vol inf from dropcount using dropfactor
         snprintf(buffer,50,"volume infused : %d  drip rate : %d \n",iv.volumeinfused,iv.driprate);      
         //data is sent to buffer in format
         if(xQueueSend(serialqueue,&buffer,0) == pdFALSE){
@@ -118,11 +136,12 @@ for(;;){
             Serial.println("display queue full");
         }
         oldDropcount = protectedDropCount;      //write previous value
-        
+        last_zero = millis();
+        flag = true;
     }
     
     if (ENABLE_PID) doPID();
-    flowstop();          //why is this here??
+    flowstop();          
     vTaskDelay(200/portTICK_PERIOD_MS);
  }
 

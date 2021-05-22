@@ -23,7 +23,7 @@
 #define SCREEN_HEIGHT 32
 
 #define OLED_RESET -1
-#define ENABLE_PID 1
+#define ENABLE_PID 0
 
 
 extern TaskHandle_t handle_doCalculation;
