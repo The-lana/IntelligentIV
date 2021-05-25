@@ -24,7 +24,7 @@ int driprateset=0,dripfactorset=0,mlinfused=0;
 int temp=0;
 bool flowStatus = true;
 static bool oldflowstatus = true;
-Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire,OLED_RESET);
+Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire1,OLED_RESET);
 //Servo servo1;
 
 
@@ -129,7 +129,7 @@ for(;;){
             //xQueuesend reutrns FALSE if iv was not placed on mqttque //0 is number of ticks to wait for space
             Serial.println("mqtt queue full");
         }
-        snprintf(displaybuffer,50,"%d ml/hr",iv.driprate);
+        snprintf(displaybuffer,50,"|%d ml/hr|",iv.driprate);
         //data is sent to display buffer in format
         if(xQueueSend(displayqueue,&displaybuffer,0) == pdFALSE){
             //xQueuesend reutrns FALSE if displaybuffer was not placed on displayque //0 is number of ticks to wait for space
@@ -203,15 +203,34 @@ void displayOLED(void * parameters){
             
             Serial.print("sending to display: ");
             Serial.print(buffer);
-            display.clearDisplay();
+            
+            if(buffer[0]=='|'){
+            display.setTextSize(2);
+            display.fillRect(0,0,128,16,BLACK);
             display.setCursor(0,0);
             display.println(buffer);        //displaying buffer value
+            }
+            else if(buffer[0]==' ')
+            {   
+                display.setTextSize(1);
+                display.fillRect(0,17,128,15,BLACK);
+                display.setCursor(0,17);
+                display.println(buffer);
+            }
+            else{
+                display.clearDisplay();
+                display.setTextSize(2);
+                display.setCursor(0,0);
+                display.println(buffer);
+
+            }
+
             display.display();
             
 
         }
 
-    vTaskDelay(50/portTICK_PERIOD_MS);
+    vTaskDelay(200/portTICK_PERIOD_MS);
     }
 }
 
@@ -351,7 +370,7 @@ void displayMenu(void * parameters){
                 {
                 
                     driprateset = encoderCounter;
-                    snprintf(buffer,40,"drip rate set as %d ml/hr",driprateset);        //sending value to displayque
+                    snprintf(buffer,40,"drip rate-%d ml/hr",driprateset);        //sending value to displayque
                     if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
                          Serial.println("queue full");
                  }
@@ -362,7 +381,7 @@ void displayMenu(void * parameters){
                 { 
                     Serial.println("dropfactor set");
                     iv.dropfactor = encoderCounter;
-                    snprintf(buffer,40,"dropfactor set as %d ml/hr",iv.dropfactor);         //sending to displayque
+                    snprintf(buffer,40,"dropfactor-%d ml/hr",iv.dropfactor);         //sending to displayque
                     if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
                          Serial.println("queue full");
                  }
@@ -371,7 +390,7 @@ void displayMenu(void * parameters){
                 {
                     Serial.println("volume to be infused is set");
                     iv.volumetobeinfused =encoderCounter;
-                    snprintf(buffer,40,"volumetobeinfused set as %d ml/hr",iv.volumetobeinfused*100);
+                    snprintf(buffer,40,"Totalvolume-%d ml/hr",iv.volumetobeinfused*100);
                     if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
                          Serial.println("queue full");
                  }
@@ -396,7 +415,7 @@ void displayMenu(void * parameters){
  * @return false if unable to initialize display.
  */
 bool initilizeDisplay(){
-    
+    Wire1.setPins(32,33);
     if(!display.begin(SSD1306_SWITCHCAPVCC,0x3C)){          //check if display is working
         Serial.println("false");
         return false;
@@ -404,7 +423,7 @@ bool initilizeDisplay(){
     
     display.clearDisplay();                 //clear previouus content
     display.setTextColor(WHITE);
-    display.setTextSize(1);                 //set text size
+    display.setTextSize(2);                 //set text size
     display.setCursor(0,0);                 //set cursor to beginning 
     display.println("display working");     //display on screen to confirm working
     Serial.println("display setup done");   //display on serial monitor to confirm working

@@ -41,9 +41,9 @@ void heartbeat_task(void * parameters){
             //Serial.printf("heart rate:%d \t O2Sat : %d \n",hroxi.heartRateAvg,hroxi.O2satAvg);
             if(xQueueSend(pulseoxiqueue,&hroxi,0)==pdFALSE)
                 Serial.println("pulse oxi queue full");
-            //snprintf(buffer,40,"O2:%d|BPM:%d\n",hroxi.O2satAvg,hroxi.heartRateAvg);
-            //if(xQueueSend(displayqueue,&buffer,0)==pdFALSE)
-                //Serial.println("displayqueuefull heartrate");
+            snprintf(buffer,40," O2:%d|BPM:%d\n",hroxi.O2satAvg,hroxi.heartRateAvg);
+            if(xQueueSend(displayqueue,&buffer,0)==pdFALSE)
+                Serial.println("displayqueuefull heartrate");
             heartRateSum = 0;
             O2satSum = 0;
             counter = 0;
