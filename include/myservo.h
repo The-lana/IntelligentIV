@@ -14,7 +14,7 @@
 #define LEDC_BASE_FREQ     50
 
 // fade LED PIN (replace with LED_BUILTIN constant for built-in LED)
-#define LED_PIN            19
+#define LED_PIN            18
 
 
 void setupPWM();

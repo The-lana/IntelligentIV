@@ -1,4 +1,5 @@
 #include "wifinetwork.h"
+#include "myservo.h"
 
 
 const char* ID = "DEVICE1";
@@ -92,14 +93,15 @@ void callback( char* topic, byte* payload, unsigned int length){
   Serial.print("message arrived on : ");
   Serial.println(topic);
   if((char)payload[0] == 'T'){
-    flowStatus = true;
+    //flowStatus = true;
+    motorclose(2000);
   }
   if((char)payload[0] == 'F'){
-    flowStatus = false;
-  }
+   // flowStatus = false;
+  motoropen(2000);
+}  }
 
 
-}
 
 
 void keepMQTTConnected(void * parameters){

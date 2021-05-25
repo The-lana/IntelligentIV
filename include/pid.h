@@ -7,4 +7,5 @@
 #include "myservo.h"
 
 void doPID();
+void errorcorrection();
 #endif

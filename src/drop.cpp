@@ -140,8 +140,8 @@ for(;;){
         flag = true;
     }
     
-    if (ENABLE_PID) doPID();
-    flowstop();          
+    if (ENABLE_PID) errorcorrection();
+    //flowstop();          
     vTaskDelay(200/portTICK_PERIOD_MS);
  }
 
@@ -200,16 +200,18 @@ void displayOLED(void * parameters){
         char buffer[50];
         //receives values from display que containing driprate or 
         if(xQueueReceive(displayqueue,(void*)&buffer,0)==pdTRUE){
+            
             Serial.print("sending to display: ");
             Serial.print(buffer);
             display.clearDisplay();
             display.setCursor(0,0);
             display.println(buffer);        //displaying buffer value
             display.display();
+            
 
         }
 
-    vTaskDelay(20/portTICK_PERIOD_MS);
+    vTaskDelay(50/portTICK_PERIOD_MS);
     }
 }
 

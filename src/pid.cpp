@@ -41,6 +41,7 @@ void doPID() {
   
     
     PID_total = PID_p + PID_i + PID_d;  
+  
 
 
     if(PID_total>0)
@@ -49,4 +50,13 @@ void doPID() {
     motoropen(PID_total*(-1));// set rotation time according to PID
     flowrate_previous_error = flowrate_error;
   }
+}
+
+void errorcorrection()
+{
+  if(driprateset-iv.driprate>=10)
+  motoropen(400);
+  else if(driprateset-iv.driprate<=(-10))
+  motorclose(400);
+
 }

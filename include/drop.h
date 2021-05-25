@@ -15,7 +15,7 @@
 #define CLK 25
 #define DT 26 
 #define SW 27
-#define SERVOPIN 19
+#define SERVOPIN 18
 #define DROP_WAIT_TIME 5000
 
 

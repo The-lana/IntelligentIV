@@ -14,7 +14,7 @@ typedef struct PULSEOXI{
 
 
 extern QueueHandle_t pulseoxiqueue;
-
+extern QueueHandle_t displayqueue;
 bool initPulseoximeter();
 void heartbeat_task(void * parameters);
 

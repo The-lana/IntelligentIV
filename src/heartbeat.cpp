@@ -28,6 +28,7 @@ bool initPulseoximeter(){
 void heartbeat_task(void * parameters){
     static int counter = 0;
     for(;;){
+        char buffer[40];
         pox.update();
         if (millis() - tsLastReport > REPORTING_PERIOD_MS) {
         if(counter < NUM_SAMPLEPOINT_AVERAGE){    
@@ -37,10 +38,12 @@ void heartbeat_task(void * parameters){
         }else{
             hroxi.heartRateAvg = heartRateSum / NUM_SAMPLEPOINT_AVERAGE;
             hroxi.O2satAvg = O2satSum / NUM_SAMPLEPOINT_AVERAGE;
-            Serial.printf("heart rate:%d \t O2Sat : %d \n",hroxi.heartRateAvg,hroxi.O2satAvg);
-            if(xQueueSend(pulseoxiqueue,hroxi,0)==pdFALSE)
+            //Serial.printf("heart rate:%d \t O2Sat : %d \n",hroxi.heartRateAvg,hroxi.O2satAvg);
+            if(xQueueSend(pulseoxiqueue,&hroxi,0)==pdFALSE)
                 Serial.println("pulse oxi queue full");
-            
+            //snprintf(buffer,40,"O2:%d|BPM:%d\n",hroxi.O2satAvg,hroxi.heartRateAvg);
+            //if(xQueueSend(displayqueue,&buffer,0)==pdFALSE)
+                //Serial.println("displayqueuefull heartrate");
             heartRateSum = 0;
             O2satSum = 0;
             counter = 0;
