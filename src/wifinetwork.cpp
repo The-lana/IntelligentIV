@@ -94,7 +94,7 @@ void callback( char* topic, byte* payload, unsigned int length){
   Serial.println(topic);
   if((char)payload[0] == 'T'){
     //flowStatus = true;
-    motorclose(2000);
+    motorclose(3500);
   }
   if((char)payload[0] == 'F'){
    // flowStatus = false;

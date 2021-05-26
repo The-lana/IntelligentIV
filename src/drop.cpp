@@ -390,7 +390,7 @@ void displayMenu(void * parameters){
                 {
                     Serial.println("volume to be infused is set");
                     iv.volumetobeinfused =encoderCounter;
-                    snprintf(buffer,40,"Totalvolume-%d ml/hr",iv.volumetobeinfused*100);
+                    snprintf(buffer,40,"Totalvolume- %d ml",mlinfused*100);
                     if(xQueueSend(displayqueue,&buffer,0)==pdFALSE){
                          Serial.println("queue full");
                  }
